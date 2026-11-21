@@ -272,7 +272,7 @@ mark.hl-has-note{border-bottom:2px solid var(--accent)}
       <div id="historyBar" class="history-chips"></div>
       <div id="secStrip" class="sec-strip"></div>
       <div class="main-sec-banner"><strong id="secName">—</strong><span id="pagePos">—</span></div>
-      <div class="chap-bar"><select id="spSelect" class="chap-select" aria-label="صفحات هذا الباب"></select><button class="btn btn-sm" id="locBtn">📍 الموقع</button><button class="btn btn-sm" id="focusBtn">🎯 تركيز</button></div>
+      <div class="chap-bar"><select id="spSelect" class="chap-select" aria-label="صفحات هذا الباب"></select><button class="btn btn-sm" id="locBtn">📍 الموقع</button><button class="btn btn-sm" id="indexBtn">📑 الفهرس</button><button class="btn btn-sm" id="focusBtn">🎯 تركيز</button></div>
       <div class="nav-row">
         <button class="btn btn-sm" id="prevBtn">→ السابق</button>
         <button class="btn btn-sm btn-soft" id="myPos">🔖 موضعي</button>
@@ -403,6 +403,17 @@ mark.hl-has-note{border-bottom:2px solid var(--accent)}
   </div>
 </div>
 
+<div class="modal-backdrop" id="indexModal">
+  <div class="modal-card">
+    <h3>📑 فهرس الأبواب</h3>
+    <input id="indexFilter" class="search-input" type="text" placeholder="تصفية اسم الباب…">
+    <div id="indexList" class="mini-row" style="max-height:60vh;overflow-y:auto"></div>
+    <div class="edit-actions" style="justify-content:flex-end">
+      <button class="btn btn-sm" id="indexClose">إغلاق</button>
+    </div>
+  </div>
+</div>
+
 <nav class="tabbar" aria-label="التنقل الرئيسي">
   <button class="tab-btn active" data-tab="read"><span class="ico">📖</span><span>القراءة</span></button>
   <button class="tab-btn" data-tab="today"><span class="ico">☀️</span><span>أبيات اليوم</span></button>
@@ -474,6 +485,7 @@ function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e
 const PARTS = window.__PARTS__ || [];
 const META = window.__BOOK_META__ || {};
 const TAGS = window.__TAGS__ || {authors:[], concepts:[], counts:{}, tagged:0};
+const INDEX = window.__INDEX__ || [];
 let PART = [], PAGES = [], PAGE_INDEX = {}, TOPICS = [];
 const loaded = {}, loading = {};
 const PART_FILE = {};
@@ -507,7 +519,7 @@ function partOfId(id){
 function buildIndexes(){
   PAGES = []; PAGE_INDEX = {}; TOPICS = [];
   PART.forEach(sh => {
-    const key = sh.topicNo + '\u0000' + sh.sp;
+    const key = pageKey(sh);
     if(!(key in PAGE_INDEX)){
       PAGE_INDEX[key] = PAGES.length;
       PAGES.push({ topicNo:sh.topicNo, topic:sh.topic, sp:sh.sp, items:[] });
@@ -523,6 +535,7 @@ function activeTopicNo(){ const p = activePage(); return p ? p.topicNo : (TOPICS
 function shahidText(sh){ return state.edits[sh.id] !== undefined ? state.edits[sh.id] : sh.text; }
 function byId(id){ return PART.find(b => b.id === id); }
 function visitedKey(i, page){ return PARTS[i].id + ':' + page; }
+function pageKey(sh){ return sh.topicNo + '\u0000' + (sh.sec || '') + '\u0000' + sh.sp; }
 
 /* ---------- look ---------- */
 function applyLook(){
@@ -814,13 +827,13 @@ function gotoShahidAsync(id){
         openPart(pi, 0).then(() => {
           const target = byId(id);
           if(target){
-            const idx = PAGE_INDEX[target.topicNo + '\u0000' + target.sp];
+            const idx = PAGE_INDEX[pageKey(target)];
             if(typeof idx === 'number') gotoPage(idx, id);
           }
           resolve();
         });
       } else {
-        gotoPage(PAGE_INDEX[sh.topicNo + '\u0000' + sh.sp], id);
+        gotoPage(PAGE_INDEX[pageKey(sh)], id);
         resolve();
       }
     };
@@ -903,7 +916,7 @@ async function gotoLoc(n){
   if(pi < 0) return;
   if(pi !== state.part) await openPart(pi, 0);
   const sh = PART.find(x => x.loc === n);
-  if(sh) gotoPage(PAGE_INDEX[sh.topicNo + '\u0000' + sh.sp], sh.id);
+  if(sh) gotoPage(PAGE_INDEX[pageKey(sh)], sh.id);
 }
 
 /* ---------- card interactions ---------- */
@@ -1027,7 +1040,9 @@ function storedVersePool(){
   return out;
 }
 function renderToday(){
-  let pool = storedVersePool();
+  let pool = [];
+  PART.forEach(sh => { if((state.benefits[sh.id] || '').trim()) versesOf(shahidText(sh), sh.id).forEach(v => pool.push(v)); });
+  if(pool.length < 3) pool = pool.concat(storedVersePool());
   if(pool.length < 3){
     const cur = [];
     PART.forEach(sh => { if(state.fav[sh.id] || state.mem[sh.id] || state.memV[sh.id+'#v0']) versesOf(shahidText(sh), sh.id).forEach(v => cur.push(v)); });
@@ -1041,7 +1056,7 @@ function renderToday(){
   while(picks.length < 3 && pool.length && guard < 300){ guard++; const i = Math.floor(rand()*pool.length); if(!used[i]){ used[i]=1; picks.push(pool[i]); } }
   $('#todayList').innerHTML = picks.length ? picks.map(v => {
     const sh = byId(v.sid);
-    const head = sh ? '<span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span>' : '<span class="badge">من مختاراتك</span>';
+    const head = sh ? '<span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span> <span class="loc">📍 ' + fmtNum(sh.loc) + '</span>' : '<span class="badge">من مختاراتك</span>';
     return '<div class="card"><div class="card-head"><div>' + head + '</div>' +
       '<button class="btn btn-sm btn-soft" data-goto="' + escapeHtml(v.sid) + '">الانتقال ↩</button></div>' +
       '<div class="shahid-body"><div class="poem-box"><div class="verse-row"><span class="verse-sadr">' + escapeHtml(v.sadr) + '</span>' +
@@ -1124,12 +1139,17 @@ function renderAuthors(){
   $('#authorIndex').innerHTML = (TAGS.authors||[]).map(a =>
     '<button class="tag-chip ' + ((state.tagFilter||[]).indexOf(a)>=0?'on':'') + '" data-tag="' + escapeHtml(a) + '">' + escapeHtml(a) + '</button>').join('');
 }
+function indexButtons(filter){
+  const q = normalizeAr(filter || '');
+  return INDEX.filter(e => !q || normalizeAr(e.name).indexOf(q) >= 0).map(e =>
+    '<button class="mini-btn" data-goto="' + escapeHtml(e.sid) + '" title="📍 ' + fmtNum(e.loc) + '">' + fmtNum(e.n) + '. ' + escapeHtml(e.name) + '</button>').join('');
+}
 function renderBookIndex(){
   const box = $('#bookIndex');
-  box.innerHTML = TOPICS.map(t => {
-    const sh = PART.find(x => x.topicNo === t);
-    return sh ? '<button class="mini-btn" data-goto="' + escapeHtml(sh.id) + '">' + escapeHtml(topicName(t)) + '</button>' : '';
-  }).join('');
+  box.innerHTML = indexButtons('') || '<span class="hint">لا يوجد فهرس.</span>';
+}
+function renderIndexModal(){
+  $('#indexList').innerHTML = indexButtons($('#indexFilter').value) || '<span class="hint">لا يوجد باب مطابق.</span>';
 }
 function renderSearchLocal(){
   renderTagChips(); renderAuthors(); renderBookIndex();
@@ -1322,16 +1342,19 @@ $('#expEpub').addEventListener('click', async () => {
   downloadBytes('aghani-' + todayKey() + '.epub', bytes, 'application/epub+zip');
   toast('تم تصدير EPUB (' + files.length + ' ملفاً)');
 });
-$('#expMd').addEventListener('click', () => {
+$('#expMd').addEventListener('click', async () => {
+  const all = await ensureAllParts(), map = {};
+  all.forEach(c => map[c.id] = c);
+  const meta = id => { const c = map[id]; return c ? '📍' + fmtNum(c.loc) + ' | ' + (c.tags||[]).join('،') + ' | ' + c.sec : ''; };
   const L = ['# كشكول الأغاني — مختاراتي', '', 'bookId: ' + BOOK_ID, 'edition: ' + EDITION, 'التاريخ: ' + todayKey(), ''];
   L.push('## التظليلات');
-  (state.highs||[]).forEach(h => L.push('- **' + h.text + '**' + (h.note ? ' — ' + h.note : '') + ' [' + h.sid + ']'));
+  (state.highs||[]).forEach(h => L.push('- **' + h.text + '**' + (h.note ? ' — ' + h.note : '') + ' [' + h.sid + '] ' + meta(h.sid)));
   L.push('', '## الأبيات المحفوظة والمفضلة');
-  storedVersePool().forEach(v => L.push('- ' + v.sadr + (v.ajz ? ' ... ' + v.ajz : '') + ' [' + v.sid + ']'));
+  storedVersePool().forEach(v => L.push('- ' + v.sadr + (v.ajz ? ' ... ' + v.ajz : '') + ' [' + v.sid + '] ' + meta(v.sid)));
   L.push('', '## الفوائد');
-  Object.keys(state.benefits).forEach(id => { if((state.benefits[id]||'').trim()) L.push('- **[' + id + ']**: ' + state.benefits[id]); });
+  Object.keys(state.benefits).forEach(id => { if((state.benefits[id]||'').trim()) L.push('- **[' + id + ']**: ' + state.benefits[id] + ' — ' + meta(id)); });
   L.push('', '## التعديلات');
-  Object.keys(state.edits).forEach(id => L.push('- **[' + id + ']**: ' + state.edits[id].replace(/\n/g,' / ')));
+  Object.keys(state.edits).forEach(id => L.push('- **[' + id + ']**: ' + state.edits[id].replace(/\n/g,' / ') + ' — ' + meta(id)));
   download('aghani-notes-' + todayKey() + '.md', L.join('\n'), 'text/markdown;charset=utf-8');
   toast('تم تصدير Markdown');
 });
@@ -1358,6 +1381,16 @@ $('#pathsBox').addEventListener('click', e => {
   $('#searchStatus').textContent = 'مسار: ' + p.title;
 });
 $('#focusBtn').addEventListener('click', () => { state.focusMode = !state.focusMode; save(); applyFocus(); toast(state.focusMode ? 'وضع التركيز مفعّل' : 'تم إنهاء التركيز'); });
+
+/* ---------- full book index ---------- */
+$('#indexBtn').addEventListener('click', () => { renderIndexModal(); $('#indexModal').style.display = 'flex'; });
+$('#indexClose').addEventListener('click', () => { $('#indexModal').style.display = 'none'; });
+$('#indexFilter').addEventListener('input', renderIndexModal);
+$('#indexList').addEventListener('click', e => {
+  const b = e.target.closest('[data-goto]'); if(!b) return;
+  $('#indexModal').style.display = 'none';
+  gotoShahid(b.dataset.goto);
+});
 
 /* ---------- location jump + return bars ---------- */
 $('#locBtn').addEventListener('click', () => {
