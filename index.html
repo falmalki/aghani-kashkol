@@ -107,6 +107,7 @@ body{padding-top:env(safe-area-inset-top);padding-bottom:calc(74px + env(safe-ar
 .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:500}
 .badge-edited{background:#e5eef8;color:#29527a}
 .badge-partial{background:#fbeccd;color:#8a5a2b;border:1px solid #e2c893}
+.badge-song{background:#eee9f6;color:#6a4f8a;border:1px solid #ddd1ec}
 .badge-ref{background:#fff;border:1px solid var(--border);cursor:pointer;color:var(--accent)}
 .verse-flash{background:var(--accent-soft);border-radius:6px;transition:background .5s}
 .shahid-body{font-family:var(--reader-font);font-size:var(--reader-size);line-height:1.95;user-select:text;-webkit-user-select:text}
@@ -354,11 +355,11 @@ mark.hl-has-note{border-bottom:2px solid var(--accent)}
   <button class="tab-btn" data-tab="settings"><span class="ico">⚙️</span><span>الإعدادات</span></button>
 </nav>
 
-<script src="data/manifest.js?v=2"></script>
+<script src="data/manifest.js?v=3"></script>
 <script>
 "use strict";
 /* غيّر رقم الإصدار هذا عند كل تحديث لملفات data كي لا يخدم المتصفح نسخة قديمة */
-const DATA_VERSION = 2;
+const DATA_VERSION = 3;
 /* ---------- helpers ---------- */
 const $ = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
@@ -366,6 +367,7 @@ function escapeHtml(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c 
 const PARSE_RE = /^\((.*?)\s*\.{3,}\s*(.*)\)$/;
 function parse(line){ const m = String(line).match(PARSE_RE); return m ? {sadr:m[1].trim(), ajz:m[2].trim()} : null; }
 function normalizeAr(s){ return String(s || '').replace(/[\u064B-\u0652\u0640]/g, ''); }
+function tidyText(t){ return String(t || '').split('\n').filter(l => l.trim()).join('\n'); }
 function todayKey(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
 function hashStr(s){ let h = 2166136261; for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 function rng(seed){ let x = seed || 1; return function(){ x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; }
@@ -543,6 +545,7 @@ function shahidHtml(sh){
   });
   let body = ''; const done = new Set();
   lines.forEach((ln, i) => {
+    if(!ln.trim()) return;
     if(ln.startsWith('(') && ln.endsWith(')')){ const gi = lineGroup[i]; if(!done.has(gi)){ body += poemHtml(groups[gi], id, gi); done.add(gi); } }
     else body += '<p class="prose-line">' + markText(ln, id) + '</p>';
   });
@@ -550,6 +553,7 @@ function shahidHtml(sh){
   return '<article class="card" data-id="' + escapeHtml(id) + '">' +
     '<div class="card-head"><div><span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span></div>' +
       '<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">' +
+      (sh.song ? '<span class="badge badge-song" title="صوت — قطعة غنائية في الأغاني">🎵' + (sh.song > 1 ? ' ×' + sh.song : '') + '</span>' : '') +
       (sh.partial ? '<span class="badge badge-partial" title="شطر مفرد في المصدر">شطر</span>' : '') +
       refButton(sh) +
       (edited ? '<span class="badge badge-edited">معدَّل</span>' : '') + '</div></div>' +
@@ -755,7 +759,7 @@ function fallbackCopy(t){
 }
 function copyShahid(id){
   const sh = byId(id); if(!sh) return;
-  const text = shahidText(sh), attr = attributionOf(text);
+  const text = tidyText(shahidText(sh)), attr = attributionOf(text);
   copyText((attr ? attr + '\n' : '') + text);
 }
 function copyPoem(key){
