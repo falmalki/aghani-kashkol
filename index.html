@@ -130,6 +130,25 @@ body{padding-top:env(safe-area-inset-top);padding-bottom:calc(74px + env(safe-ar
 .loc{font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap}
 .back-bar{margin-bottom:10px}
 .back-bar:empty{display:none}
+.card-sec{color:var(--muted);font-size:12px}
+.benefit-strip{margin:10px 0 0;padding:8px 10px;border-radius:10px;background:#eef1e6;border-right:3px solid #8a8f5a;font-size:13px;line-height:1.7}
+.benefit-box{margin-top:10px;padding:10px;border-radius:12px;background:var(--note-bg);border:1px solid var(--border)}
+.history-chips{display:flex;gap:6px;overflow-x:auto;padding:3px 2px 8px;scrollbar-width:none}
+.history-chips::-webkit-scrollbar{display:none}
+.hchip{flex:0 0 auto;border:1px solid var(--border);background:var(--card);color:var(--muted);border-radius:999px;padding:4px 10px;font-family:inherit;font-size:11px;cursor:pointer;white-space:nowrap}
+.tag-chip{flex:0 0 auto;border:1px solid var(--border);background:var(--card);color:var(--accent);border-radius:999px;padding:5px 11px;font-family:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
+.tag-chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tag-wrap{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.mini-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.mini-btn{border:1px solid var(--border);background:var(--card);color:var(--muted);border-radius:8px;padding:3px 8px;font-family:inherit;font-size:11px;cursor:pointer}
+.path-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px}
+.path-card h4{margin:0 0 6px;font-size:14px;color:var(--accent)}
+.path-reason{font-size:12px;color:var(--muted);line-height:1.7}
+.path-teaser{margin:8px 0;background:var(--poem-bg);border:1px solid var(--poem-border);border-radius:10px;padding:8px 10px;font-size:12px;line-height:1.8}
+.path-teaser div+div{margin-top:4px;padding-top:4px;border-top:1px dashed var(--poem-border)}
+.progress{height:6px;border-radius:99px;background:var(--border);overflow:hidden;margin:8px 0}
+.progress i{display:block;height:100%;background:var(--accent)}
+.focus-mode .card-foot,.focus-mode .poem-actions,.focus-mode .benefit-box,.focus-mode .edit-box,.focus-mode .mini-row{display:none!important}
 mark.hl{background:var(--hl-color);color:inherit;padding:1px 3px;border-radius:4px;cursor:pointer}
 mark.hl-has-note{border-bottom:2px solid var(--accent)}
 .card-foot{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
@@ -250,9 +269,10 @@ mark.hl-has-note{border-bottom:2px solid var(--accent)}
     <div id="readLoading" class="loading">جارٍ تحميل القسم…</div>
     <div id="readBody" hidden>
       <div id="readBackBar" class="back-bar"></div>
+      <div id="historyBar" class="history-chips"></div>
       <div id="secStrip" class="sec-strip"></div>
       <div class="main-sec-banner"><strong id="secName">—</strong><span id="pagePos">—</span></div>
-      <div class="chap-bar"><select id="spSelect" class="chap-select" aria-label="صفحات هذا الباب"></select><button class="btn btn-sm" id="locBtn">📍 الموقع</button></div>
+      <div class="chap-bar"><select id="spSelect" class="chap-select" aria-label="صفحات هذا الباب"></select><button class="btn btn-sm" id="locBtn">📍 الموقع</button><button class="btn btn-sm" id="focusBtn">🎯 تركيز</button></div>
       <div class="nav-row">
         <button class="btn btn-sm" id="prevBtn">→ السابق</button>
         <button class="btn btn-sm btn-soft" id="myPos">🔖 موضعي</button>
@@ -265,6 +285,9 @@ mark.hl-has-note{border-bottom:2px solid var(--accent)}
         <button class="btn btn-sm" id="nextBtnBottom">التالي ←</button>
       </div>
       <div id="stats" class="stats-bar"></div>
+      <div class="sec-title">🧭 مسارات القراءة</div>
+      <div class="nav-row" style="margin:0 0 8px"><button class="btn btn-sm btn-soft" id="pathsToggle">إظهار المكتملة</button></div>
+      <div id="pathsBox"></div>
     </div>
   </section>
 
@@ -279,14 +302,21 @@ mark.hl-has-note{border-bottom:2px solid var(--accent)}
   <section id="tab-fav" hidden><div id="favList"></div></section>
 
   <section id="tab-search" hidden>
-    <div class="sec-title">🔍 البحث في الكتاب والملاحظات</div>
+    <div class="sec-title">🔍 البحث في الكتاب والفوائد</div>
     <input id="searchInput" class="search-input" type="text" placeholder="اكتب كلمة أو عبارة… (دون تشكيل)">
     <div class="nav-row" style="margin:0 0 10px">
       <button class="btn btn-sm btn-soft" id="searchAllBtn">🔎 بحث في الكتاب كله</button>
+      <button class="btn btn-sm" id="clearTagsBtn">مسح الوسوم</button>
       <span class="hint" id="searchStatus" style="margin:0"></span>
     </div>
     <button class="btn btn-sm btn-soft back-bar" id="searchBackBtn" hidden>← العودة إلى القراءة</button>
-    <div id="searchResults" class="hint">اكتب كلمة أو عبارة للبحث.</div>
+    <div class="sec-title" style="margin-top:4px">🏷 الوسوم الشائعة</div>
+    <div id="tagChips" class="tag-wrap"></div>
+    <div class="sec-title">✍️ فهرس الأعلام</div>
+    <div id="authorIndex" class="tag-wrap"></div>
+    <div class="sec-title">📑 فهرس الأبواب</div>
+    <div id="bookIndex" class="mini-row"></div>
+    <div id="searchResults" class="hint" style="margin-top:14px">اكتب كلمة أو عبارة للبحث.</div>
   </section>
 
   <section id="tab-settings" hidden>
@@ -316,10 +346,16 @@ mark.hl-has-note{border-bottom:2px solid var(--accent)}
         <button class="btn btn-sm" id="expJson">⬇️ تصدير JSON</button>
         <button class="btn btn-sm" id="impJson">⬆️ استيراد JSON</button>
         <button class="btn btn-sm" id="expMd">📄 تصدير Markdown</button>
+        <button class="btn btn-sm" id="expAnki">🃏 تصدير Anki TSV</button>
+        <button class="btn btn-sm" id="expEpub">📚 تصدير EPUB</button>
+        <button class="btn btn-sm" id="mergeJson">🔀 دمج فوائد من نسخة أخرى</button>
+        <button class="btn btn-sm" id="impLegacy">⬆️ استيراد قديم</button>
         <button class="btn btn-sm" id="resetAll">↺ إعادة الضبط</button>
       </div>
       <input id="fileInput" type="file" accept="application/json,.json" hidden>
-      <div class="hint">تُحفظ ملاحظاتك وتعديلاتك في هذا الجهاز فقط (localStorage). صدّر نسخة قبل مسح بيانات Safari.</div>
+      <input id="mergeInput" type="file" accept="application/json,.json" hidden>
+      <input id="legacyInput" type="file" accept="application/json,.json" hidden>
+      <div class="hint">تُحفظ فوائدك وتعديلاتك في هذا الجهاز فقط (localStorage). صدّر نسخة قبل مسح بيانات Safari. ملف JSON يحمل اسم الكتاب وإصداره ويرفض الاستيراد من كتاب آخر.</div>
     </div>
     <div class="setblock">
       <h3>عن الكتاب</h3>
@@ -375,11 +411,11 @@ mark.hl-has-note{border-bottom:2px solid var(--accent)}
   <button class="tab-btn" data-tab="settings"><span class="ico">⚙️</span><span>الإعدادات</span></button>
 </nav>
 
-<script src="data/manifest.js?v=4"></script>
+<script src="data/manifest.js?v=5"></script>
 <script>
 "use strict";
 /* غيّر رقم الإصدار هذا عند كل تحديث لملفات data كي لا يخدم المتصفح نسخة قديمة */
-const DATA_VERSION = 4;
+const DATA_VERSION = 5;
 /* ---------- helpers ---------- */
 const $ = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
@@ -394,7 +430,8 @@ function hashStr(s){ let h = 2166136261; for(let i=0;i<s.length;i++){ h ^= s.cha
 function rng(seed){ let x = seed || 1; return function(){ x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; }
 
 /* ---------- state ---------- */
-const KEY = 'aghani-v2';
+const KEY = 'aghani-v3';
+const BOOK_ID = 'aghani', BOOK_TITLE = 'الأغاني', EDITION = 'نسخة EPUB';
 const FONTS = {
   'Readex Pro':"'Readex Pro',system-ui,-apple-system,sans-serif",
   'Amiri':"'Amiri',serif",
@@ -412,14 +449,23 @@ const HL_COLORS = [
 const MEM_LABEL = ['للحفظ؟','أحفظه','حفظته ✓'];
 const DEFAULT = {
   part:0, page:0,
-  fontSize:19, fontFamily:FONTS['Readex Pro'], hlColor:HL_COLORS[0].val, hideAjz:false,
-  fav:{}, favV:{}, mem:{}, memV:{}, notes:{}, edits:{}, highs:[], bm:null, visited:{}
+  fontSize:19, fontFamily:FONTS['Readex Pro'], hlColor:HL_COLORS[0].val,
+  hideAjz:false, focusMode:false, showDonePaths:false,
+  fav:{}, favV:{}, mem:{}, memV:{}, benefits:{}, edits:{}, highs:[],
+  bm:null, visited:{}, history:[], readCards:{}, tagFilter:[]
 };
+function migrate(o){
+  o = o || {};
+  if(o.notes){ o.benefits = Object.assign({}, o.notes, o.benefits || {}); delete o.notes; }
+  if(!Array.isArray(o.tagFilter)) o.tagFilter = [];
+  if(!Array.isArray(o.history)) o.history = [];
+  return o;
+}
 let state = load();
 function load(){
   try{
     const raw = localStorage.getItem(KEY);
-    return raw ? Object.assign({}, DEFAULT, JSON.parse(raw)) : Object.assign({}, DEFAULT);
+    return raw ? Object.assign({}, DEFAULT, migrate(JSON.parse(raw))) : Object.assign({}, DEFAULT);
   }catch(e){ return Object.assign({}, DEFAULT); }
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
@@ -427,6 +473,7 @@ function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e
 /* ---------- parts ---------- */
 const PARTS = window.__PARTS__ || [];
 const META = window.__BOOK_META__ || {};
+const TAGS = window.__TAGS__ || {authors:[], concepts:[], counts:{}, tagged:0};
 let PART = [], PAGES = [], PAGE_INDEX = {}, TOPICS = [];
 const loaded = {}, loading = {};
 const PART_FILE = {};
@@ -557,6 +604,24 @@ function refButton(sh){
   if(!sh.partialRef) return '';
   return '<button class="badge badge-ref" data-act="gotoRef" data-id="' + escapeHtml(sh.id) + '">↗ البيت كامل</button>';
 }
+function benefitStrip(id){
+  const b = (state.benefits[id] || '').trim();
+  return b ? '<div class="benefit-strip">✍️ فائدتي: ' + escapeHtml(b) + '</div>' : '';
+}
+function relatedOf(sh){
+  return PART.filter(x => x.id !== sh.id).map(x => {
+    let s = 0;
+    if(x.topicNo === sh.topicNo) s += 3;
+    if(x.sec === sh.sec) s += 2;
+    s += 2 * (x.tags || []).filter(t => (sh.tags || []).indexOf(t) >= 0).length;
+    return {x, s};
+  }).filter(o => o.s > 0).sort((a, b) => b.s - a.s).slice(0, 3).map(o => o.x);
+}
+function relatedRow(sh){
+  const list = relatedOf(sh);
+  return list.length ? '<div class="mini-row">' + list.map(x =>
+    '<button class="mini-btn" data-goto="' + escapeHtml(x.id) + '">بطاقة قريبة · 📍' + fmtNum(x.loc) + '</button>').join('') + '</div>' : '';
+}
 function shahidHtml(sh){
   const id = sh.id, text = shahidText(sh), edited = Object.prototype.hasOwnProperty.call(state.edits, id);
   const lines = text.split('\n'), groups = verseGroups(lines);
@@ -570,36 +635,41 @@ function shahidHtml(sh){
     if(ln.startsWith('(') && ln.endsWith(')')){ const gi = lineGroup[i]; if(!done.has(gi)){ body += poemHtml(groups[gi], id, gi); done.add(gi); } }
     else body += '<p class="prose-line">' + markText(ln, id) + '</p>';
   });
-  const mem = state.mem[id] || 0, hasNote = !!(state.notes[id] || '').trim();
+  const mem = state.mem[id] || 0, benefit = (state.benefits[id] || '').trim();
+  const sec = sh.sec || '', bab = sh.bab || '';
+  const headText = /الجزء\s+\d+\s*$/.test(sec) ? sec : sec + ' <span class="card-sec">· ' + escapeHtml(bab) + '</span>';
   return '<article class="card" data-id="' + escapeHtml(id) + '">' +
-    '<div class="card-head"><div><span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span></div>' +
-      '<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center"><span class="loc">📍 الموقع ' + fmtNum(sh.loc || '') + '</span>' +
+    '<div class="card-head"><div class="card-sec">' + headText + '</div>' +
+      '<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;justify-content:flex-end">' +
       (sh.song ? '<span class="badge badge-song" title="صوت — قطعة غنائية في الأغاني">🎵' + (sh.song > 1 ? ' ×' + sh.song : '') + '</span>' : '') +
       (sh.partial ? '<span class="badge badge-partial" title="شطر مفرد في المصدر">شطر</span>' : '') +
       refButton(sh) +
-      (edited ? '<span class="badge badge-edited">معدَّل</span>' : '') + '</div></div>' +
+      (edited ? '<span class="badge badge-edited">معدَّل</span>' : '') +
+      '<span class="loc">📍 الموقع ' + fmtNum(sh.loc || '') + '</span></div></div>' +
     '<div class="shahid-body">' + body + '</div>' +
+    benefitStrip(id) +
+    relatedRow(sh) +
     '<div class="card-foot">' +
-      '<button class="btn btn-sm ' + (state.fav[id] ? 'btn-soft' : '') + '" data-act="fav" data-id="' + escapeHtml(id) + '">' + (state.fav[id] ? '★ بطاقة مفضلة' : '☆ تفضيل البطاقة') + '</button>' +
+      '<button class="btn btn-sm ' + (state.fav[id] ? 'btn-soft' : '') + '" data-act="fav" data-id="' + escapeHtml(id) + '">' + (state.fav[id] ? '★ في المختارات' : '☆ أضف للمختارات') + '</button>' +
       '<button class="btn btn-sm ' + memClass(mem) + '" data-act="mem" data-id="' + escapeHtml(id) + '">' + MEM_LABEL[mem] + '</button>' +
       '<button class="btn btn-sm" data-act="copy" data-id="' + escapeHtml(id) + '">📋 نسخ</button>' +
-      '<button class="btn btn-sm ' + (hasNote ? 'btn-soft' : '') + '" data-act="note" data-id="' + escapeHtml(id) + '">📝 ' + (hasNote ? 'ملاحظتي ✓' : 'ملاحظة') + '</button>' +
+      '<button class="btn btn-sm ' + (benefit ? 'btn-soft' : '') + '" data-act="benefit" data-id="' + escapeHtml(id) + '">✍️ ' + (benefit ? 'فائدتي ✓' : 'أضف فائدة') + '</button>' +
       '<button class="btn btn-sm" data-act="edit" data-id="' + escapeHtml(id) + '">تصحيح النص</button>' +
     '</div>' +
     '<div class="edit-box" data-box="edit" hidden><textarea class="edarea" data-id="' + escapeHtml(id) + '">' + escapeHtml(text) + '</textarea>' +
       '<div class="edit-actions"><button class="btn btn-sm btn-accent" data-act="saveEdit" data-id="' + escapeHtml(id) + '">حفظ</button>' +
       '<button class="btn btn-sm" data-act="cancelEdit" data-id="' + escapeHtml(id) + '">إلغاء</button>' +
       '<button class="btn btn-sm" data-act="resetEdit" data-id="' + escapeHtml(id) + '">استرجاع الأصل</button></div></div>' +
-    '<div class="note-box" data-box="note" hidden>' +
-      '<label><span>📝 ملاحظتي</span><button class="btn btn-sm btn-soft" data-act="saveNote" data-id="' + escapeHtml(id) + '">💾 حفظ</button></label>' +
-      '<textarea class="notearea" data-id="' + escapeHtml(id) + '" placeholder="اكتب ملاحظتك هنا…">' + escapeHtml(state.notes[id] || '') + '</textarea></div>' +
+    '<div class="benefit-box" data-box="benefit" hidden>' +
+      '<label><span>✍️ فائدتي</span><button class="btn btn-sm btn-soft" data-act="saveBenefit" data-id="' + escapeHtml(id) + '">💾 حفظ</button></label>' +
+      '<textarea class="benefitarea" data-id="' + escapeHtml(id) + '" placeholder="اكتب فائدتك هنا…">' + escapeHtml(state.benefits[id] || '') + '</textarea></div>' +
   '</article>';
 }
 function safeCard(sh){
   try { return shahidHtml(sh); }
   catch(e){
     return '<article class="card" data-id="' + escapeHtml(sh.id) + '">' +
-      '<div class="card-head"><span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span></div>' +
+      '<div class="card-head"><span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span><span class="loc">📍 ' + fmtNum(sh.loc || '') + '</span></div>' +
       '<div class="shahid-body"><div class="prose-line">' + escapeHtml(shahidText(sh)).replace(/\n/g, '<br>') + '</div></div></article>';
   }
 }
@@ -636,14 +706,38 @@ function renderRead(){
     '<option value="' + PAGES.indexOf(q) + '"' + (q === p ? ' selected' : '') + '>صفحة ' + (i+1) + ': ' +
     escapeHtml((q.items[0] && q.items[0].spl) || '') + '</option>').join('');
   $('#cards').innerHTML = p.items.map(safeCard).join('');
-  state.visited[visitedKey(state.part, state.page)] = true; save(); renderStats();
+  p.items.forEach(it => { state.readCards[it.id] = 1; });
+  state.visited[visitedKey(state.part, state.page)] = true;
+  markPosition(); renderHistory(); renderPaths(); applyFocus();
+  save(); renderStats();
+}
+const PATHS = [
+  {id:'p1', title:'العشق والغزل', reason:'أكثر ما تغنّى به الشعراء وجدتَ في وصف الهوى والصبابة.', tags:['الحب والغزل']},
+  {id:'p2', title:'الجواري والنساء', reason:'أخبار الجواري والنساء تفتح باباً واسعاً من الطرب والظرف.', tags:['الجواري والنساء']},
+  {id:'p3', title:'الموت والمراثي', reason:'فيها من قصائد النوح والمراثي ما يعيد إلى الذكران.', tags:['الموت']},
+  {id:'p4', title:'الخمر واللهو', reason:'مجالس اللهو والشراب حاضرة في الأغاني.', tags:['الخمر','اللهو والمزاح']},
+  {id:'p5', title:'السفر والحج', reason:'الرحلات والحجيج يمرّون بأخبار الشعراء والمغنين.', tags:['السفر والحج']},
+  {id:'p6', title:'الحكمة والمواعظ', reason:'لمحات من الموعظة والزهد تتخلل الأخبار.', tags:['الحكمة والمواعظ']}
+];
+function allLoadedCards(){
+  let a = [];
+  Object.keys(loaded).forEach(k => { a = a.concat(loaded[k]); });
+  return a.length ? a : PART;
+}
+function pathCards(path){
+  const pool = allLoadedCards();
+  return pool.filter(c => (c.tags || []).some(t => path.tags.indexOf(t) >= 0)).slice(0, 5);
+}
+function pathsDoneCount(){
+  return PATHS.filter(p => { const cs = pathCards(p); return cs.length > 0 && cs.every(c => state.readCards[c.id]); }).length;
 }
 function stats(){
   return {
     pages:Object.keys(state.visited).length,
     mem:Object.keys(state.mem).filter(k => state.mem[k] === 2).length + Object.keys(state.memV).filter(k => state.memV[k] === 2).length,
     fav:Object.keys(state.fav).length + Object.keys(state.favV).length,
-    notes:Object.keys(state.notes).filter(k => (state.notes[k]||'').trim()).length,
+    benefits:Object.keys(state.benefits).filter(k => (state.benefits[k]||'').trim()).length,
+    pathsDone:pathsDoneCount(),
     hl:(state.highs||[]).length,
     edits:Object.keys(state.edits).length
   };
@@ -652,12 +746,14 @@ function renderStats(){
   const s = stats();
   $('#stats').innerHTML =
     '<span>📄 مقروءة <strong>' + s.pages + '</strong></span><span>🎓 محفوظ <strong>' + s.mem + '</strong></span>' +
-    '<span>★ مفضلة <strong>' + s.fav + '</strong></span><span>📝 ملاحظات <strong>' + s.notes + '</strong></span>' +
+    '<span>★ مختارات <strong>' + s.fav + '</strong></span><span>✍️ فوائد <strong>' + s.benefits + '</strong></span>' +
+    '<span>🧭 مسارات <strong>' + s.pathsDone + '/' + PATHS.length + '</strong></span>' +
     '<span>🖍 تظليلات <strong>' + s.hl + '</strong></span>';
   $('#setStats').innerHTML =
     '<div><span>شاهد</span><b>' + (META.cards || 0) + '</b></div><div><span>صفحة</span><b>' + (META.pages || 0) + '</b></div>' +
     '<div><span>مقروءة</span><b>' + s.pages + '</b></div><div><span>محفوظ</span><b>' + s.mem + '</b></div>' +
-    '<div><span>مفضلة</span><b>' + s.fav + '</b></div><div><span>ملاحظات</span><b>' + s.notes + '</b></div>' +
+    '<div><span>مختارات</span><b>' + s.fav + '</b></div><div><span>فوائد</span><b>' + s.benefits + '</b></div>' +
+    '<div><span>مسارات</span><b>' + s.pathsDone + '/' + PATHS.length + '</b></div>' +
     '<div><span>تظليلات</span><b>' + s.hl + '</b></div><div><span>تعديلات</span><b>' + s.edits + '</b></div>';
 }
 async function openPart(i, page, sid){
@@ -672,8 +768,10 @@ async function openPart(i, page, sid){
     $('#readLoading').hidden = true; $('#readBody').hidden = false;
     applyLook();
     renderRead();
-    if(sid){ const el = $('#cards .card[data-id="' + sid + '"]'); if(el) el.scrollIntoView({block:'center'}); }
-    window.scrollTo({top:0});
+    if(sid){
+      const el = $('#cards .card[data-id="' + sid + '"]');
+      if(el) el.scrollIntoView({behavior:'instant', block:'center'});
+    } else window.scrollTo({top:0, behavior:'instant'});
   }catch(e){
     $('#readLoading').hidden = false;
     $('#readLoading').textContent = 'تعذّر تحميل القسم: ' + e.message + ' — تأكد من وجود مجلد data بجانب index.html.';
@@ -682,8 +780,10 @@ async function openPart(i, page, sid){
 function gotoPage(i, sid){
   if(i < 0 || i >= PAGES.length) return;
   state.page = i; save(); renderRead();
-  if(sid){ const el = $('#cards .card[data-id="' + sid + '"]'); if(el) el.scrollIntoView({block:'center'}); }
-  window.scrollTo({top:0});
+  if(sid){
+    const el = $('#cards .card[data-id="' + sid + '"]');
+    if(el) el.scrollIntoView({behavior:'instant', block:'center'});
+  } else window.scrollTo({top:0, behavior:'instant'});
 }
 function gotoShahid(id){
   if(partOfId(id) < 0) return;
@@ -697,7 +797,7 @@ async function gotoRef(id){
   setTimeout(() => {
     const box = document.querySelector('[data-pkey="' + ref.sid + '#v' + ref.gi + '"]');
     if(!box) return;
-    box.scrollIntoView({block:'center'});
+    box.scrollIntoView({behavior:'instant', block:'center'});
     const row = box.querySelector('.verse-row[data-vi="' + ref.vi + '"]');
     if(row){ row.classList.add('verse-flash'); setTimeout(() => row.classList.remove('verse-flash'), 2200); }
   }, 120);
@@ -729,6 +829,42 @@ function gotoShahidAsync(id){
   });
 }
 
+/* ---------- history, paths and focus mode ---------- */
+function markPosition(){
+  const p = activePage(), first = p && p.items[0];
+  if(!first) return;
+  const rec = {part:state.part, page:state.page, loc:first.loc, sid:first.id, at:Date.now()};
+  state.history = [rec].concat(state.history.filter(h => !(h.part === rec.part && h.page === rec.page))).slice(0, 5);
+}
+function renderHistory(){
+  const bar = $('#historyBar'); if(!bar) return;
+  bar.innerHTML = state.history.map(h =>
+    '<button class="hchip" data-hist="' + h.part + ':' + h.page + '">آخر المواضع · 📍' + fmtNum(h.loc) + '</button>').join('');
+}
+function renderPaths(){
+  const box = $('#pathsBox'); if(!box) return;
+  box.innerHTML = PATHS.map(p => {
+    const cs = pathCards(p);
+    if(!cs.length) return '';
+    const done = cs.every(c => state.readCards[c.id]);
+    if(done && !state.showDonePaths) return '';
+    const teaser = cs.slice(0, 2).map(c => {
+      const t = shahidText(c).split('\n').find(l => l.trim() && !/^\(.*\)$/.test(l)) || (c.tags || []).join(' · ');
+      return '<div>' + escapeHtml(String(t).slice(0, 110)) + '…</div>';
+    }).join('');
+    const n = cs.filter(c => state.readCards[c.id]).length;
+    return '<div class="path-card"><h4>🧭 ' + escapeHtml(p.title) + (done ? ' ✅' : '') + '</h4>' +
+      '<div class="path-reason">' + escapeHtml(p.reason) + '</div><div class="path-teaser">' + teaser + '</div>' +
+      '<div class="progress"><i style="width:' + Math.round(n / cs.length * 100) + '%"></i></div>' +
+      '<div class="mini-row"><button class="mini-btn" data-path="' + p.id + '">فتح البطاقات (' + n + '/' + cs.length + ')</button></div></div>';
+  }).join('') || '<div class="empty-msg">لا توجد مسارات متاحة بعد.</div>';
+  const t = $('#pathsToggle'); if(t) t.textContent = state.showDonePaths ? 'إخفاء المكتملة' : 'إظهار المكتملة';
+}
+function applyFocus(){
+  $('#cards').classList.toggle('focus-mode', !!state.focusMode);
+  const b = $('#focusBtn'); if(b) b.textContent = state.focusMode ? '🎯 إنهاء التركيز' : '🎯 تركيز';
+}
+
 /* ---------- reading location + return-to-reading ---------- */
 let readReturn = null;
 let currentTab = 'read';
@@ -751,6 +887,7 @@ function restoreRead(){
   const go = () => {
     if(r.part === state.part){ state.page = r.page; save(); renderRead(); }
     else openPart(r.part, r.page);
+    markPosition(); renderHistory();
     const at = () => {
       window.scrollTo({top:r.scrollY, behavior:'instant'});
       requestAnimationFrame(() => { if(Math.abs(window.scrollY - r.scrollY) > 2) window.scrollTo({top:r.scrollY, behavior:'instant'}); });
@@ -781,18 +918,19 @@ $('#cards').addEventListener('click', e => {
     else if(act === 'copy' && id){ copyShahid(id); return; }
     else if(act === 'copyV' && key){ copyPoem(key); return; }
     else if(act === 'gotoRef' && id){ gotoRef(id); return; }
-    else if(act === 'note' && id){ const card = btn.closest('.card'); const box = card.querySelector('[data-box="note"]'); box.hidden = !box.hidden; return; }
-    else if(act === 'saveNote' && id){ state.notes[id] = btn.closest('.card').querySelector('.notearea').value; save(); toast('تم حفظ الملاحظة'); renderRead(); return; }
+    else if(act === 'benefit' && id){ const card = btn.closest('.card'); const box = card.querySelector('[data-box="benefit"]'); box.hidden = !box.hidden; return; }
+    else if(act === 'saveBenefit' && id){ state.benefits[id] = btn.closest('.card').querySelector('.benefitarea').value; save(); toast('تم حفظ الفائدة'); renderRead(); return; }
     else if(act === 'edit' && id){ const card = btn.closest('.card'); card.querySelector('.shahid-body').hidden = true; card.querySelector('.card-foot').hidden = true; card.querySelector('[data-box="edit"]').hidden = false; return; }
     else if(act === 'saveEdit' && id){ state.edits[id] = btn.closest('.card').querySelector('.edarea').value; save(); toast('تم حفظ التعديل'); renderRead(); return; }
     else if(act === 'cancelEdit'){ renderRead(); return; }
     else if(act === 'resetEdit' && id){ delete state.edits[id]; save(); toast('تمت استعادة الأصل'); renderRead(); return; }
     save(); renderRead(); return;
   }
+  const g = e.target.closest('[data-goto]'); if(g){ gotoShahid(g.dataset.goto); return; }
   const ajz = e.target.closest('.ajz-veiled'); if(ajz){ ajz.classList.add('revealed'); return; }
   const mk = e.target.closest('mark[data-hid]'); if(mk) openHighlight(mk.dataset.hid);
 });
-$('#cards').addEventListener('input', e => { if(e.target.classList.contains('notearea')){ state.notes[e.target.dataset.id] = e.target.value; save(); } });
+$('#cards').addEventListener('input', e => { if(e.target.classList.contains('benefitarea')){ state.benefits[e.target.dataset.id] = e.target.value; save(); } });
 function toggleFavV(key){
   if(state.favV[key]){ delete state.favV[key]; return; }
   const sh = byId(key.split('#')[0]);
@@ -918,7 +1056,7 @@ $('#hideAjzBtn').addEventListener('click', () => { state.hideAjz = !state.hideAj
 
 /* ---------- favorites ---------- */
 function favCard(sh, extra){
-  return '<div class="card"><div class="card-head"><div><span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span></div>' +
+  return '<div class="card"><div class="card-head"><div><span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span> <span class="loc">📍 ' + fmtNum(sh.loc || '') + '</span></div>' +
     '<button class="btn btn-sm btn-soft" data-goto="' + escapeHtml(sh.id) + '">الانتقال ↩</button></div>' +
     '<div class="shahid-body">' + (extra || '<div>' + escapeHtml(attributionOf(shahidText(sh)).slice(0,160)) + '</div>') + '</div></div>';
 }
@@ -937,10 +1075,10 @@ function renderFav(){
   const memorizedIds = Object.keys(state.mem).filter(k => state.mem[k] === 2)
     .concat(Object.keys(state.memV).filter(k => memVState(k) === 2));
   const memorized = memorizedIds.map(id => { const sh = byId(id.split('#')[0]); return sh ? favCard(sh) : ''; });
-  const N = Object.keys(state.notes).filter(k => (state.notes[k]||'').trim()).map(id => byId(id) ? favCard(byId(id), '<div>' + escapeHtml(state.notes[id]) + '</div>') : '');
+  const N = Object.keys(state.benefits).filter(k => (state.benefits[k]||'').trim()).map(id => byId(id) ? favCard(byId(id), '<div class="benefit-strip">✍️ ' + escapeHtml(state.benefits[id]) + '</div>') : '');
   const block = (t, arr) => arr.length ? '<div class="sec-title">' + t + ' (' + arr.length + ')</div>' + arr.join('') : '';
-  const html = block('🖍 التظليلات', H) + block('★ البطاقات المفضلة', F) + block('✨ الأبيات والمقطوعات المفضلة', FV) +
-    block('🌱 أحفظه', learning) + block('✅ حفظته', memorized) + block('📝 ملاحظاتي', N);
+  const html = block('🖍 التظليلات', H) + block('★ المختارات', F) + block('✨ الأبيات والمقطوعات المفضلة', FV) +
+    block('🌱 أحفظه', learning) + block('✅ حفظته', memorized) + block('✍️ فوائدي', N);
   $('#favList').innerHTML = html || '<div class="empty-msg">لا توجد مختارات بعد. ابدأ بتفضيل بطاقة أو تظليل بيت.</div>';
 }
 $('#favList').addEventListener('click', e => { const c = e.target.closest('[data-goto]'); if(c) gotoShahid(c.dataset.goto); });
@@ -948,38 +1086,63 @@ $('#favList').addEventListener('click', e => { const c = e.target.closest('[data
 /* ---------- search ---------- */
 let searchToken = 0;
 function resultCard(sh, sn, note){
-  return '<div class="card"><div class="card-head"><span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span>' +
+  return '<div class="card"><div class="card-head"><span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span> <span class="loc">📍 ' + fmtNum(sh.loc || '') + '</span>' +
     '<button class="btn btn-sm btn-soft" data-goto="' + escapeHtml(sh.id) + '">الانتقال ↩</button></div>' +
     '<div>' + (note ? '📝 ' : '…') + escapeHtml(sn) + '…</div>' +
     '<div class="hint" style="margin-top:6px"><button class="btn btn-sm btn-soft" data-goto="' + escapeHtml(sh.id) + '">📍 الموقع ' + fmtNum(sh.loc || '') + ' ←</button></div></div>';
 }
+function tagMatch(sh){
+  const f = state.tagFilter || [];
+  return !f.length || (sh.tags || []).some(t => f.indexOf(t) >= 0);
+}
 function scanPart(data, nq, q){
   const res = [];
   data.forEach(sh => {
+    if(!tagMatch(sh)) return;
     const text = shahidText(sh);
     const nt = normalizeAr(text);
-    const idx = nt.indexOf(nq);
-    if(idx >= 0){
-      let sn = text.replace(/\n/g,' ');
-      sn = sn.slice(Math.max(0, idx-35), idx + q.length + 80);
-      res.push(resultCard(sh, sn, false));
-    }
-    const note = state.notes[sh.id] || '';
-    if(note && normalizeAr(note).indexOf(nq) >= 0) res.push(resultCard(sh, note, true));
+    if(nq){
+      const idx = nt.indexOf(nq);
+      if(idx >= 0){
+        let sn = text.replace(/\n/g,' ');
+        sn = sn.slice(Math.max(0, idx-35), idx + q.length + 80);
+        res.push(resultCard(sh, sn, false));
+      }
+      const benefit = state.benefits[sh.id] || '';
+      if(benefit && normalizeAr(benefit).indexOf(nq) >= 0) res.push(resultCard(sh, benefit, true));
+    } else res.push(resultCard(sh, attributionOf(text).slice(0, 130) || (sh.tags||[]).join(' · '), false));
   });
   return res;
 }
+function renderTagChips(){
+  const counts = TAGS.counts || {};
+  const names = Object.keys(counts).sort((a,b) => counts[b]-counts[a]).slice(0, 24);
+  $('#tagChips').innerHTML = names.map(t =>
+    '<button class="tag-chip ' + ((state.tagFilter||[]).indexOf(t)>=0?'on':'') + '" data-tag="' + escapeHtml(t) + '">' + escapeHtml(t) + ' (' + counts[t] + ')</button>').join('');
+}
+function renderAuthors(){
+  $('#authorIndex').innerHTML = (TAGS.authors||[]).map(a =>
+    '<button class="tag-chip ' + ((state.tagFilter||[]).indexOf(a)>=0?'on':'') + '" data-tag="' + escapeHtml(a) + '">' + escapeHtml(a) + '</button>').join('');
+}
+function renderBookIndex(){
+  const box = $('#bookIndex');
+  box.innerHTML = TOPICS.map(t => {
+    const sh = PART.find(x => x.topicNo === t);
+    return sh ? '<button class="mini-btn" data-goto="' + escapeHtml(sh.id) + '">' + escapeHtml(topicName(t)) + '</button>' : '';
+  }).join('');
+}
 function renderSearchLocal(){
+  renderTagChips(); renderAuthors(); renderBookIndex();
   const q = $('#searchInput').value.trim();
-  if(!q){ $('#searchResults').textContent = 'اكتب كلمة أو عبارة للبحث.'; $('#searchStatus').textContent = ''; return; }
+  if(!q && !(state.tagFilter||[]).length){ $('#searchResults').textContent = 'اكتب كلمة أو عبارة للبحث، أو اختر وسماً.'; $('#searchStatus').textContent = ''; return; }
   const nq = normalizeAr(q);
   const res = scanPart(PART, nq, q);
-  $('#searchStatus').textContent = 'داخل القسم الحالي';
+  $('#searchStatus').textContent = (state.tagFilter||[]).length ? 'وسوم: ' + state.tagFilter.join(' + ') : 'داخل القسم الحالي';
   $('#searchResults').innerHTML = res.length ? '<div class="sec-title">النتائج (' + res.length + ')</div>' + res.join('') : '<div class="empty-msg">لم يُعثر على نتائج مطابقة في هذا القسم. جرّب «بحث في الكتاب كله».</div>';
 }
 async function searchAll(){
   const q = $('#searchInput').value.trim();
-  if(!q) return;
+  if(!q && !(state.tagFilter||[]).length) return;
   const token = ++searchToken;
   const nq = normalizeAr(q);
   let all = [];
@@ -1000,6 +1163,15 @@ async function searchAll(){
 }
 $('#searchInput').addEventListener('input', () => { searchToken++; renderSearchLocal(); });
 $('#searchAllBtn').addEventListener('click', searchAll);
+$('#tagChips').addEventListener('click', e => { const b=e.target.closest('[data-tag]'); if(b) toggleTag(b.dataset.tag); });
+$('#authorIndex').addEventListener('click', e => { const b=e.target.closest('[data-tag]'); if(b) toggleTag(b.dataset.tag); });
+function toggleTag(t){
+  const f = state.tagFilter || [];
+  const i = f.indexOf(t);
+  if(i >= 0) f.splice(i,1); else f.push(t);
+  state.tagFilter = f; save(); renderSearchLocal();
+}
+$('#clearTagsBtn').addEventListener('click', () => { state.tagFilter = []; save(); renderSearchLocal(); });
 $('#searchResults').addEventListener('click', e => { const c = e.target.closest('[data-goto]'); if(c) gotoShahid(c.dataset.goto); });
 
 /* ---------- settings ---------- */
@@ -1018,32 +1190,174 @@ function download(name, content, type){
   a.href = url; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-$('#expJson').addEventListener('click', () => { download('aghani-backup-' + todayKey() + '.json', JSON.stringify(state, null, 2), 'application/json'); toast('تم تصدير النسخة'); });
-$('#impJson').addEventListener('click', () => $('#fileInput').click());
-$('#fileInput').addEventListener('change', e => {
-  const f = e.target.files[0]; if(!f) return;
+function envelope(){ return {app:'arabic-kashkol', bookId:BOOK_ID, bookTitle:BOOK_TITLE, edition:EDITION, exportedAt:new Date().toISOString(), state:state}; }
+function readJsonFile(input, cb){
+  const f = input.files && input.files[0]; if(!f) return;
   const r = new FileReader();
-  r.onload = () => { try{ state = Object.assign({}, DEFAULT, JSON.parse(r.result)); save(); applyLook(); renderRead(); renderStats(); toast('تم استيراد النسخة'); }catch(err){ toast('ملف غير صالح'); } };
-  r.readAsText(f); e.target.value = '';
+  r.onload = () => { let o; try{ o = JSON.parse(r.result); }catch(e){ toast('ملف غير صالح'); return; } cb(o); };
+  r.readAsText(f); input.value = '';
+}
+const USER_KEYS = ['benefits','fav','favV','mem','memV','highs','edits','bm','readCards','history'];
+$('#expJson').addEventListener('click', () => {
+  download('aghani-' + todayKey() + '.json', JSON.stringify(envelope(), null, 2), 'application/json');
+  toast('تم تصدير النسخة');
+});
+$('#impJson').addEventListener('click', () => $('#fileInput').click());
+$('#fileInput').addEventListener('change', e => readJsonFile(e.target, o => {
+  const s = o && o.state ? o.state : null;
+  if(!s){ toast('الملف لا يحمل بيانات الكتاب'); return; }
+  if(o.bookId !== BOOK_ID){ toast('هذا الملف من كتاب آخر: ' + (o.bookTitle || '؟')); return; }
+  state = Object.assign({}, DEFAULT, migrate(s)); save(); applyLook(); renderRead(); renderStats();
+  toast('تم استيراد النسخة');
+}));
+$('#mergeJson').addEventListener('click', () => $('#mergeInput').click());
+$('#mergeInput').addEventListener('change', e => readJsonFile(e.target, o => {
+  const s = o && o.state ? o.state : (o && o.bookId ? null : o);
+  if(!s){ toast('ملف غير صالح'); return; }
+  const m = migrate(s);
+  USER_KEYS.forEach(k => {
+    if(m[k] && typeof m[k] === 'object' && !Array.isArray(m[k])) state[k] = Object.assign({}, m[k], state[k]);
+    else if(Array.isArray(m[k])) state[k] = Array.from(new Set((state[k]||[]).concat(m[k])));
+  });
+  save(); renderRead(); renderStats(); toast('تم دمج فوائد النسخة الأخرى');
+}));
+$('#impLegacy').addEventListener('click', () => $('#legacyInput').click());
+$('#legacyInput').addEventListener('change', e => readJsonFile(e.target, o => {
+  if(o && o.state){ toast('استخدم «استيراد JSON» للملفات الحديثة'); return; }
+  if(!confirm('ملف قديم بلا اسم كتاب. هل تريد استيراده وتحويل الملاحظات إلى فوائد؟')) return;
+  state = Object.assign({}, DEFAULT, migrate(o)); save(); applyLook(); renderRead(); renderStats(); toast('تم استيراد الملف القديم');
+}));
+async function ensureAllParts(){ for(let i=0;i<PARTS.length;i++) await loadPart(i); return allLoadedCards(); }
+function tsvCell(s){ return String(s == null ? '' : s).replace(/\t/g,' ').replace(/\r?\n/g,' '); }
+$('#expAnki').addEventListener('click', async () => {
+  const all = await ensureAllParts(); const byIdAll = {}; all.forEach(c => byIdAll[c.id] = c);
+  const L = ['#separator:Tab', '#html:true', '#tags:Col3'];
+  Object.keys(state.benefits).forEach(id => {
+    const b = (state.benefits[id]||'').trim(); if(!b) return;
+    const sh = byIdAll[id];
+    L.push([tsvCell(b), '📍 ' + fmtNum(sh?sh.loc:'?') + ' — ' + tsvCell(sh?sh.sec:''), tsvCell((sh&&sh.tags||[]).join(' '))].join('\t'));
+  });
+  (state.highs||[]).forEach(h => {
+    if(!(h.note||'').trim()) return;
+    const sh = byIdAll[h.sid];
+    L.push([tsvCell(h.note), '📍 ' + fmtNum(sh?sh.loc:'?') + ' — ' + tsvCell(h.text), tsvCell((sh&&sh.tags||[]).join(' '))].join('\t'));
+  });
+  download('aghani-anki-' + todayKey() + '.tsv', L.join('\n'), 'text/tab-separated-values;charset=utf-8');
+  toast('تم تصدير Anki TSV');
+});
+function crc32(buf){
+  let crc = 0xFFFFFFFF, c;
+  for(let i=0;i<buf.length;i++){
+    c = (crc ^ buf[i]) & 255;
+    for(let k=0;k<8;k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    crc = (crc >>> 8) ^ c;
+  }
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+function u16(a,o,v){ a[o]=v&255; a[o+1]=(v>>>8)&255; }
+function u32(a,o,v){ a[o]=v&255; a[o+1]=(v>>>8)&255; a[o+2]=(v>>>16)&255; a[o+3]=(v>>>24)&255; }
+function zipFiles(files){
+  const enc = new TextEncoder(), local = [], central = [];
+  let offset = 0;
+  files.forEach(f => {
+    const name = enc.encode(f.name), data = f.data, crc = crc32(data);
+    const lh = new Uint8Array(30 + name.length);
+    u32(lh,0,0x04034b50); u16(lh,4,20); u16(lh,6,0); u16(lh,8,0); u16(lh,10,0); u16(lh,12,0);
+    u32(lh,14,crc); u32(lh,18,data.length); u32(lh,22,data.length);
+    u16(lh,26,name.length); u16(lh,28,0); lh.set(name,30);
+    local.push(lh, data);
+    const ch = new Uint8Array(46 + name.length);
+    u32(ch,0,0x02014b50); u16(ch,4,20); u16(ch,6,20); u16(ch,8,0); u16(ch,10,0); u16(ch,12,0); u16(ch,14,0);
+    u32(ch,16,crc); u32(ch,20,data.length); u32(ch,24,data.length);
+    u16(ch,28,name.length); u16(ch,30,0); u16(ch,32,0); u16(ch,34,0); u16(ch,36,0);
+    u32(ch,38,0); u32(ch,42,offset); ch.set(name,46);
+    central.push(ch);
+    offset += lh.length + data.length;
+  });
+  const csize = central.reduce((n,c) => n + c.length, 0);
+  const eocd = new Uint8Array(22);
+  u32(eocd,0,0x06054b50); u16(eocd,4,0); u16(eocd,6,0);
+  u16(eocd,8,files.length); u16(eocd,10,files.length);
+  u32(eocd,12,csize); u32(eocd,16,offset); u16(eocd,20,0);
+  const all = local.concat(central, [eocd]);
+  const out = new Uint8Array(all.reduce((n,a) => n + a.length, 0));
+  let p = 0; all.forEach(a => { out.set(a,p); p += a.length; });
+  return out;
+}
+function downloadBytes(name, bytes, type){
+  const blob = new Blob([bytes], {type:type || 'application/octet-stream'});
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+$('#expEpub').addEventListener('click', async () => {
+  toast('جارٍ تجهيز EPUB…');
+  const all = await ensureAllParts();
+  const groups = new Map();
+  all.forEach(c => { const k = c.topicNo + '|' + c.topic; const a = groups.get(k) || {name:c.topic, items:[]}; a.items.push(c); groups.set(k,a); });
+  const enc = new TextEncoder(), files = [];
+  const add = (name, text) => files.push({name, data:enc.encode(text)});
+  add('mimetype', 'application/epub+zip');
+  add('META-INF/container.xml', '<?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>');
+  const chapters = []; let idx = 1;
+  groups.forEach((g, key) => {
+    const fname = 'chap' + idx + '.xhtml'; idx++;
+    const body = g.items.map(c => {
+      const lines = shahidText(c).split('\n').filter(l => l.trim()).map(l => {
+        const p = parse(l);
+        return p ? '<div class="bayt"><span>' + escapeHtml(p.sadr) + '</span> — <span>' + escapeHtml(p.ajz) + '</span></div>' : '<p>' + escapeHtml(l) + '</p>';
+      }).join('\n');
+      const ben = (state.benefits[c.id]||'').trim();
+      return '<div class="card"><h3>📍 ' + fmtNum(c.loc) + ' — ' + escapeHtml(c.sec) + '</h3>' + lines +
+        (ben ? '<div class="benefit">✍️ ' + escapeHtml(ben) + '</div>' : '') + '</div>';
+    }).join('\n');
+    add('OEBPS/' + fname, '<?xml version="1.0" encoding="UTF-8"?><html xmlns="http://www.w3.org/1999/xhtml" dir="rtl" lang="ar"><head><title>' + escapeHtml(g.name) + '</title><link rel="stylesheet" type="text/css" href="style.css"/></head><body><h2>' + escapeHtml(g.name) + '</h2>' + body + '</body></html>');
+    chapters.push({id:'c' + idx, href:fname, title:g.name});
+  });
+  add('OEBPS/nav.xhtml', '<?xml version="1.0" encoding="UTF-8"?><html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" dir="rtl" lang="ar"><head><title>المحتويات</title></head><body><nav epub:type="toc"><h1>المحتويات</h1><ol>' + chapters.map(c => '<li><a href="' + c.href + '">' + escapeHtml(c.title) + '</a></li>').join('') + '</ol></nav></body></html>');
+  add('OEBPS/style.css', 'body{font-family:serif;line-height:1.9}.bayt{margin:6px 0}.benefit{background:#eef1e6;padding:6px;border-radius:6px}.card{border-bottom:1px solid #ddd;padding:8px 0}');
+  add('OEBPS/content.opf', '<?xml version="1.0" encoding="UTF-8"?><package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="id"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:title>' + escapeHtml(BOOK_TITLE) + '</dc:title><dc:creator>أبو الفرج الأصفهاني</dc:creator><dc:identifier id="id">aghani-kashkol</dc:identifier><dc:language>ar</dc:language></metadata><manifest><item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>' + chapters.map(c => '<item id="' + c.id + '" href="' + c.href + '" media-type="application/xhtml+xml"/>').join('') + '<item id="css" href="style.css" media-type="text/css"/></manifest><spine>' + chapters.map(c => '<itemref idref="' + c.id + '"/>').join('') + '</spine></package>');
+  const bytes = zipFiles(files);
+  if(bytes[0] !== 0x50 || bytes[1] !== 0x4b || bytes[2] !== 0x03 || bytes[3] !== 0x04){ toast('تعذّر تركيب EPUB'); return; }
+  downloadBytes('aghani-' + todayKey() + '.epub', bytes, 'application/epub+zip');
+  toast('تم تصدير EPUB (' + files.length + ' ملفاً)');
 });
 $('#expMd').addEventListener('click', () => {
-  const L = ['# كشكول الأغاني — مختاراتي', '', 'التاريخ: ' + todayKey(), ''];
+  const L = ['# كشكول الأغاني — مختاراتي', '', 'bookId: ' + BOOK_ID, 'edition: ' + EDITION, 'التاريخ: ' + todayKey(), ''];
   L.push('## التظليلات');
   (state.highs||[]).forEach(h => L.push('- **' + h.text + '**' + (h.note ? ' — ' + h.note : '') + ' [' + h.sid + ']'));
   L.push('', '## الأبيات المحفوظة والمفضلة');
   storedVersePool().forEach(v => L.push('- ' + v.sadr + (v.ajz ? ' ... ' + v.ajz : '') + ' [' + v.sid + ']'));
-  L.push('', '## الملاحظات');
-  Object.keys(state.notes).forEach(id => { if((state.notes[id]||'').trim()) L.push('- **[' + id + ']**: ' + state.notes[id]); });
+  L.push('', '## الفوائد');
+  Object.keys(state.benefits).forEach(id => { if((state.benefits[id]||'').trim()) L.push('- **[' + id + ']**: ' + state.benefits[id]); });
   L.push('', '## التعديلات');
   Object.keys(state.edits).forEach(id => L.push('- **[' + id + ']**: ' + state.edits[id].replace(/\n/g,' / ')));
   download('aghani-notes-' + todayKey() + '.md', L.join('\n'), 'text/markdown;charset=utf-8');
   toast('تم تصدير Markdown');
 });
 $('#resetAll').addEventListener('click', () => {
-  if(confirm('سيتم حذف كل الملاحظات والتعديلات والمفضلة على هذا الجهاز. هل أنت متأكد؟')){
+  if(confirm('سيتم حذف كل الفوائد والتظليلات والتعديلات والمختارات على هذا الجهاز. هل أنت متأكد؟')){
     state = Object.assign({}, DEFAULT); save(); applyLook(); renderRead(); renderStats(); toast('تمت إعادة الضبط');
   }
 });
+
+/* ---------- history, paths, focus handlers ---------- */
+$('#historyBar').addEventListener('click', e => {
+  const b = e.target.closest('[data-hist]'); if(!b) return;
+  const [part, page] = b.dataset.hist.split(':').map(Number);
+  if(part === state.part) gotoPage(page); else openPart(part, page);
+});
+$('#pathsToggle').addEventListener('click', () => { state.showDonePaths = !state.showDonePaths; save(); renderPaths(); });
+$('#pathsBox').addEventListener('click', e => {
+  const b = e.target.closest('[data-path]'); if(!b) return;
+  const p = PATHS.find(x => x.id === b.dataset.path); if(!p) return;
+  state.tagFilter = p.tags.slice(); save();
+  setTab('search');
+  $('#searchInput').value = '';
+  renderSearchLocal();
+  $('#searchStatus').textContent = 'مسار: ' + p.title;
+});
+$('#focusBtn').addEventListener('click', () => { state.focusMode = !state.focusMode; save(); applyFocus(); toast(state.focusMode ? 'وضع التركيز مفعّل' : 'تم إنهاء التركيز'); });
 
 /* ---------- location jump + return bars ---------- */
 $('#locBtn').addEventListener('click', () => {
