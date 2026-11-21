@@ -516,7 +516,7 @@ function verseGroups(lines){
   });
   return groups;
 }
-function attributionOf(text){ return text.split('\n').find(l => !(l.startsWith('(') && l.endsWith(')'))) || ''; }
+function attributionOf(text){ return text.split('\n').find(l => l.trim() && !(l.startsWith('(') && l.endsWith(')'))) || ''; }
 function poemHtml(group, sid, gi){
   const key = sid + '#v' + gi;
   const rows = group.map((ln, vi) => {
