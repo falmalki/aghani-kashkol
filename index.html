@@ -1,0 +1,1050 @@
+<!doctype html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="الأغاني">
+<meta name="theme-color" content="#fbf7ef">
+<title>كشكول الأغاني — أبو الفرج الأصفهاني</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='28' fill='%23fbf7ef'/%3E%3Crect x='14' y='14' width='100' height='100' rx='20' fill='none' stroke='%238a5a2b' stroke-width='5'/%3E%3Ctext x='64' y='80' text-anchor='middle' font-size='52' font-family='serif' fill='%238a5a2b'%3E%D8%BA%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='36' fill='%23fbf7ef'/%3E%3Crect x='18' y='18' width='144' height='144' rx='26' fill='none' stroke='%238a5a2b' stroke-width='6'/%3E%3Ctext x='90' y='112' text-anchor='middle' font-size='74' font-family='serif' fill='%238a5a2b'%3E%D8%BA%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;600&family=Noto+Naskh+Arabic:wght@400;600&family=Readex+Pro:wght@400;500;600&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbf7ef;
+  --card:#fffdf8;
+  --ink:#2c241b;
+  --muted:#6e6154;
+  --accent:#8a5a2b;
+  --accent-soft:#f2e6d5;
+  --border:#e6dccb;
+  --ok:#2e6b47;
+  --ok-soft:#e6f3eb;
+  --topbar-bg:rgba(251,247,239,.94);
+  --tabbar-bg:rgba(255,253,248,.96);
+  --poem-bg:#faf4e8;
+  --poem-border:#eadec9;
+  --note-bg:#f8f2e7;
+  --edit-bg:#f4efe6;
+  --hl-color:#fde68a;
+  --reader-font:'Readex Pro',system-ui,-apple-system,sans-serif;
+  --reader-size:19px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  margin:0;padding:0;width:100%;max-width:100%;overflow-x:hidden;
+  background:var(--bg);color:var(--ink);
+  font-family:'Readex Pro',system-ui,-apple-system,sans-serif;line-height:1.75;
+}
+body{padding-top:env(safe-area-inset-top);padding-bottom:calc(74px + env(safe-area-inset-bottom))}
+
+/* top bar */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:var(--topbar-bg);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.brand{display:flex;flex-direction:column;min-width:0}
+.brand h1{margin:0;font-size:16px;font-weight:600;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand span{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.font-ctrl{display:flex;align-items:center;gap:5px;flex-shrink:0}
+#fsVal{font-size:12px;color:var(--muted);min-width:20px;text-align:center}
+
+/* buttons */
+.btn{
+  appearance:none;border:1px solid var(--border);background:var(--card);color:var(--ink);
+  border-radius:10px;padding:6px 11px;font-family:inherit;font-size:13px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:5px;
+  transition:background .15s,border-color .15s;
+}
+.btn:active{transform:scale(.97)}
+.btn-accent{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-soft{background:var(--accent-soft);color:var(--accent);border-color:#dfcbb0}
+.btn-ok{background:var(--ok-soft);color:var(--ok);border-color:#b7dec6}
+.btn-sm{padding:4px 9px;font-size:12px;border-radius:8px}
+
+.container{width:100%;max-width:820px;margin:0 auto;padding:12px 12px 28px;overflow-x:hidden}
+
+/* section strip */
+.sec-strip{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.sec-strip::-webkit-scrollbar{display:none}
+.sec-pill{
+  flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
+  border:1px solid var(--border);background:var(--card);color:var(--muted);
+  font-family:inherit;font-size:13px;cursor:pointer;white-space:nowrap;
+}
+.sec-pill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.sec-pill .cnt{font-size:10px;color:var(--muted);background:var(--bg);border-radius:999px;padding:0 6px}
+.sec-pill.active .cnt{background:rgba(255,255,255,.22);color:#fff}
+.main-sec-banner{
+  background:var(--accent-soft);border:1px solid #dfcbb0;border-radius:12px;padding:10px 14px;margin-bottom:10px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;
+}
+.main-sec-banner strong{color:var(--accent);font-size:15px}
+.main-sec-banner span{font-size:12px;color:var(--muted)}
+.chap-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.chap-select{
+  flex:1 1 200px;width:100%;max-width:100%;min-width:0;padding:8px 10px;border-radius:10px;
+  border:1px solid var(--border);background:var(--card);color:var(--ink);font-family:inherit;font-size:14px;
+}
+.nav-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 0 14px;flex-wrap:wrap}
+
+/* cards */
+.card{
+  max-width:100%;overflow-wrap:break-word;background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(44,36,27,.03);
+}
+.card-head{
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;
+  margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed var(--border);
+  font-size:12px;color:var(--muted);
+}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:500}
+.badge-edited{background:#e5eef8;color:#29527a}
+.badge-partial{background:#fbeccd;color:#8a5a2b;border:1px solid #e2c893}
+.badge-ref{background:#fff;border:1px solid var(--border);cursor:pointer;color:var(--accent)}
+.verse-flash{background:var(--accent-soft);border-radius:6px;transition:background .5s}
+.shahid-body{font-family:var(--reader-font);font-size:var(--reader-size);line-height:1.95;user-select:text;-webkit-user-select:text}
+.prose-line{margin:0 0 10px;text-align:justify}
+.poem-box{background:var(--poem-bg);border:1px solid var(--poem-border);border-radius:12px;padding:12px 14px;margin:10px 0 14px}
+.poem-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:6px;margin-top:8px;padding-top:8px;border-top:1px dashed #e2d4bd}
+.verse-row{display:flex;flex-direction:column;gap:2px;padding:5px 0}
+.verse-row + .verse-row{border-top:1px dashed var(--poem-border)}
+.verse-sadr,.verse-ajz{text-align:right;font-weight:500}
+.verse-ajz:empty{display:none}
+@media(min-width:600px){
+  .verse-row{flex-direction:row;justify-content:space-between;align-items:baseline;gap:18px}
+  .verse-sadr,.verse-ajz{flex:1;text-align:right}
+}
+.verse-ajz.ajz-veiled,.ajz-veiled{filter:blur(6px);opacity:.28;cursor:pointer;transition:filter .2s,opacity .2s;user-select:none}
+.ajz-veiled.revealed{filter:none;opacity:1}
+mark.hl{background:var(--hl-color);color:inherit;padding:1px 3px;border-radius:4px;cursor:pointer}
+mark.hl-has-note{border-bottom:2px solid var(--accent)}
+.card-foot{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
+.note-box{margin-top:10px;background:var(--note-bg);border-radius:12px;padding:10px}
+.note-box label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px}
+.note-box textarea,.edit-box textarea{
+  width:100%;min-height:68px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);
+  background:var(--card);color:var(--ink);font-family:inherit;font-size:14px;line-height:1.6;resize:vertical;
+}
+.edit-box{margin-top:10px;padding:10px;border-radius:12px;background:var(--edit-bg);border:1px solid var(--border)}
+.edit-box textarea{min-height:150px}
+.edit-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.stats-bar{
+  display:flex;flex-wrap:wrap;gap:8px;justify-content:space-around;background:var(--card);
+  border:1px solid var(--border);border-radius:14px;padding:10px 12px;margin-top:14px;font-size:12px;color:var(--muted);
+}
+.stats-bar strong{color:var(--accent);font-size:14px}
+
+/* tabbar */
+.tabbar{
+  position:fixed;bottom:0;left:0;right:0;z-index:50;
+  background:var(--tabbar-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-top:1px solid var(--border);display:flex;justify-content:space-around;
+  padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+}
+.tab-btn{
+  appearance:none;border:none;background:none;color:var(--muted);font-family:inherit;font-size:11px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 8px;cursor:pointer;
+}
+.tab-btn .ico{font-size:18px;line-height:1.1}
+.tab-btn.active{color:var(--accent);font-weight:600}
+
+/* floating */
+.hl-float{
+  position:fixed;bottom:calc(82px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:60;
+  background:var(--ink);color:#fff;border:none;border-radius:999px;padding:10px 18px;
+  font-family:inherit;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.22);cursor:pointer;display:none;
+}
+.scroll-top{
+  position:fixed;bottom:calc(82px + env(safe-area-inset-bottom));left:14px;z-index:55;
+  width:42px;height:42px;border-radius:50%;border:1px solid var(--border);background:var(--card);
+  color:var(--accent);font-size:18px;box-shadow:0 4px 12px rgba(0,0,0,.1);cursor:pointer;
+  display:none;align-items:center;justify-content:center;
+}
+
+/* modal */
+.modal-backdrop{
+  position:fixed;inset:0;z-index:80;background:rgba(44,36,27,.45);display:none;
+  align-items:center;justify-content:center;padding:16px;
+}
+.modal-card{
+  width:100%;max-width:440px;background:var(--card);border-radius:16px;padding:16px;
+  border:1px solid var(--border);box-shadow:0 12px 30px rgba(0,0,0,.2);
+  max-height:86vh;overflow-y:auto;
+}
+.modal-card h3{margin:0 0 8px;font-size:16px;color:var(--accent)}
+.modal-quote{
+  font-size:14px;background:var(--poem-bg);padding:8px 10px;border-radius:8px;
+  border-right:3px solid var(--accent);margin-bottom:10px;max-height:110px;overflow-y:auto;
+}
+.modal-card textarea{width:100%;min-height:80px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);font-family:inherit;font-size:14px}
+
+/* parts sheet */
+.part-row{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  padding:10px 8px;border-bottom:1px dashed var(--border);cursor:pointer;
+}
+.part-row:last-child{border-bottom:none}
+.part-row.active{background:var(--accent-soft);border-radius:8px}
+.part-row .pt{font-size:14px;color:var(--ink)}
+.part-row .pv{font-size:11px;color:var(--muted)}
+.part-row .pn{font-size:11px;color:var(--accent);white-space:nowrap}
+
+/* search / settings */
+.search-input{
+  width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);
+  background:var(--card);color:var(--ink);font-family:inherit;font-size:15px;margin-bottom:12px;
+}
+.setblock{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:12px}
+.setblock h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
+.swatches{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.swatch{width:34px;height:34px;border-radius:50%;border:2px solid transparent;cursor:pointer}
+.swatch.active{border-color:var(--ink);transform:scale(1.08)}
+.statlist{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px}
+.statlist div{background:var(--accent-soft);border-radius:9px;padding:7px 9px;display:flex;justify-content:space-between}
+.statlist b{color:var(--accent)}
+.actiongrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sec-title{font-size:15px;font-weight:600;color:var(--accent);margin:18px 0 8px;display:flex;align-items:center;gap:6px}
+.empty-msg{text-align:center;color:var(--muted);padding:24px 12px;font-size:14px}
+.hint{font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px}
+.loading{text-align:center;color:var(--muted);padding:40px 12px;font-size:14px}
+#toast{
+  position:fixed;bottom:calc(140px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+  z-index:70;background:var(--accent-soft);color:var(--accent);border:1px solid #dfcbb0;
+  border-radius:999px;padding:8px 16px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;
+  max-width:85%;text-align:center;
+}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="btn btn-sm" id="partsBtn" title="الأقسام">📚</button>
+  <div class="brand">
+    <h1>كشكول الأغاني</h1>
+    <span id="brandSub">أبو الفرج الأصفهاني • ٢٤ جزءاً</span>
+  </div>
+  <div class="font-ctrl">
+    <button class="btn btn-sm" id="fsDown" title="تصغير الخط">A−</button>
+    <span id="fsVal">19</span>
+    <button class="btn btn-sm" id="fsUp" title="تكبير الخط">A+</button>
+  </div>
+</header>
+
+<main class="container" id="appMain">
+  <section id="tab-read">
+    <div id="readLoading" class="loading">جارٍ تحميل القسم…</div>
+    <div id="readBody" hidden>
+      <div id="secStrip" class="sec-strip"></div>
+      <div class="main-sec-banner"><strong id="secName">—</strong><span id="pagePos">—</span></div>
+      <div class="chap-bar"><select id="spSelect" class="chap-select" aria-label="صفحات هذا الباب"></select></div>
+      <div class="nav-row">
+        <button class="btn btn-sm" id="prevBtn">→ السابق</button>
+        <button class="btn btn-sm btn-soft" id="myPos">🔖 موضعي</button>
+        <button class="btn btn-sm" id="nextBtn">التالي ←</button>
+      </div>
+      <div id="cards"></div>
+      <div class="nav-row">
+        <button class="btn btn-sm" id="prevBtnBottom">→ السابق</button>
+        <button class="btn btn-accent" id="bmBtn">🔖 حفظ مكان القراءة</button>
+        <button class="btn btn-sm" id="nextBtnBottom">التالي ←</button>
+      </div>
+      <div id="stats" class="stats-bar"></div>
+    </div>
+  </section>
+
+  <section id="tab-today" hidden>
+    <div class="sec-title">☀️ مختارات اليوم</div>
+    <div class="nav-row" style="margin:0 0 12px">
+      <button class="btn btn-sm btn-soft" id="hideAjzBtn">🙈 إخفاء العجز للاستظهار</button>
+    </div>
+    <div id="todayList"></div>
+  </section>
+
+  <section id="tab-fav" hidden><div id="favList"></div></section>
+
+  <section id="tab-search" hidden>
+    <div class="sec-title">🔍 البحث في الكتاب والملاحظات</div>
+    <input id="searchInput" class="search-input" type="text" placeholder="اكتب كلمة أو عبارة… (دون تشكيل)">
+    <div class="nav-row" style="margin:0 0 10px">
+      <button class="btn btn-sm btn-soft" id="searchAllBtn">🔎 بحث في الكتاب كله</button>
+      <span class="hint" id="searchStatus" style="margin:0"></span>
+    </div>
+    <div id="searchResults" class="hint">اكتب كلمة أو عبارة للبحث.</div>
+  </section>
+
+  <section id="tab-settings" hidden>
+    <div class="sec-title">⚙️ الإعدادات</div>
+    <div class="setblock">
+      <h3>نوع الخط</h3>
+      <select id="fontSel" class="chap-select">
+        <option value="Readex Pro">Readex Pro (الافتراضي)</option>
+        <option value="Amiri">Amiri (أميري)</option>
+        <option value="Scheherazade New">Scheherazade New (شهرزاد)</option>
+        <option value="Noto Naskh Arabic">Noto Naskh Arabic (نسخ)</option>
+        <option value="IBM Plex Sans Arabic">IBM Plex Sans Arabic</option>
+      </select>
+      <div class="hint">حجم الخط: <span id="setFsVal">19px</span> — استخدم A− / A+ أعلى الشاشة.</div>
+    </div>
+    <div class="setblock">
+      <h3>لون التظليل</h3>
+      <div id="hlSwatches" class="swatches"></div>
+    </div>
+    <div class="setblock">
+      <h3>إحصاءات الكتاب</h3>
+      <div id="setStats" class="statlist"></div>
+    </div>
+    <div class="setblock">
+      <h3>النسخ الاحتياطي والتصدير</h3>
+      <div class="actiongrid">
+        <button class="btn btn-sm" id="expJson">⬇️ تصدير JSON</button>
+        <button class="btn btn-sm" id="impJson">⬆️ استيراد JSON</button>
+        <button class="btn btn-sm" id="expMd">📄 تصدير Markdown</button>
+        <button class="btn btn-sm" id="resetAll">↺ إعادة الضبط</button>
+      </div>
+      <input id="fileInput" type="file" accept="application/json,.json" hidden>
+      <div class="hint">تُحفظ ملاحظاتك وتعديلاتك في هذا الجهاز فقط (localStorage). صدّر نسخة قبل مسح بيانات Safari.</div>
+    </div>
+    <div class="setblock">
+      <h3>عن الكتاب</h3>
+      <div class="hint">الأغاني — لأبي الفرج علي بن الحسين الأصفهاني (ت 356هـ). النص محفوظ حرفياً كما ورد في طبعة دار الفكر، ويمكنك تصحيح أي خطأ من داخل التطبيق. استُبعد الجزء ٢١ لأنه مكرر عن الجزء ١٠ في نسخة المصدر.</div>
+    </div>
+  </section>
+</main>
+
+<button class="hl-float" id="hlFloatBtn">تظليل المحدد ✎</button>
+<button class="scroll-top" id="scrollTopBtn" title="العودة للأعلى">↑</button>
+<div id="toast"></div>
+
+<div class="modal-backdrop" id="hlModal">
+  <div class="modal-card">
+    <h3>تظليل وإضافة ملاحظة</h3>
+    <div class="modal-quote" id="hlQuote"></div>
+    <textarea id="hlNote" placeholder="اكتب ملاحظتك حول هذا الموضع (اختياري)…"></textarea>
+    <div class="edit-actions" style="justify-content:flex-end">
+      <button class="btn btn-sm" id="hlDelete" style="color:#a33;display:none">حذف التظليل</button>
+      <button class="btn btn-sm" id="hlCancel">إلغاء</button>
+      <button class="btn btn-sm btn-accent" id="hlSave">حفظ التظليل</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="partsModal">
+  <div class="modal-card">
+    <h3>أقسام الكتاب</h3>
+    <div id="partsList"></div>
+    <div class="edit-actions" style="justify-content:flex-end">
+      <button class="btn btn-sm" id="partsClose">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<nav class="tabbar" aria-label="التنقل الرئيسي">
+  <button class="tab-btn active" data-tab="read"><span class="ico">📖</span><span>القراءة</span></button>
+  <button class="tab-btn" data-tab="today"><span class="ico">☀️</span><span>أبيات اليوم</span></button>
+  <button class="tab-btn" data-tab="fav"><span class="ico">★</span><span>مختاراتي</span></button>
+  <button class="tab-btn" data-tab="search"><span class="ico">🔍</span><span>بحث</span></button>
+  <button class="tab-btn" data-tab="settings"><span class="ico">⚙️</span><span>الإعدادات</span></button>
+</nav>
+
+<script src="data/manifest.js"></script>
+<script>
+"use strict";
+/* ---------- helpers ---------- */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+function escapeHtml(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+const PARSE_RE = /^\((.*?)\s*\.{3,}\s*(.*)\)$/;
+function parse(line){ const m = String(line).match(PARSE_RE); return m ? {sadr:m[1].trim(), ajz:m[2].trim()} : null; }
+function normalizeAr(s){ return String(s || '').replace(/[\u064B-\u0652\u0640]/g, ''); }
+function todayKey(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function hashStr(s){ let h = 2166136261; for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function rng(seed){ let x = seed || 1; return function(){ x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; }
+
+/* ---------- state ---------- */
+const KEY = 'aghani-v1';
+const FONTS = {
+  'Readex Pro':"'Readex Pro',system-ui,-apple-system,sans-serif",
+  'Amiri':"'Amiri',serif",
+  'Scheherazade New':"'Scheherazade New',serif",
+  'Noto Naskh Arabic':"'Noto Naskh Arabic',serif",
+  'IBM Plex Sans Arabic':"'IBM Plex Sans Arabic',sans-serif"
+};
+const HL_COLORS = [
+  {name:'أصفر دافئ', val:'#fde68a'},
+  {name:'أخضر عشبي', val:'#ccebd4'},
+  {name:'سماوي هادئ', val:'#cfe8fc'},
+  {name:'وردي خفيف', val:'#fbd5e0'},
+  {name:'خوخي', val:'#fed7aa'}
+];
+const MEM_LABEL = ['للحفظ؟','أحفظه','حفظته ✓'];
+const DEFAULT = {
+  part:0, page:0,
+  fontSize:19, fontFamily:FONTS['Readex Pro'], hlColor:HL_COLORS[0].val, hideAjz:false,
+  fav:{}, favV:{}, mem:{}, memV:{}, notes:{}, edits:{}, highs:[], bm:null, visited:{}
+};
+let state = load();
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    return raw ? Object.assign({}, DEFAULT, JSON.parse(raw)) : Object.assign({}, DEFAULT);
+  }catch(e){ return Object.assign({}, DEFAULT); }
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+
+/* ---------- parts ---------- */
+const PARTS = window.__PARTS__ || [];
+const META = window.__BOOK_META__ || {};
+let PART = [], PAGES = [], PAGE_INDEX = {}, TOPICS = [];
+const loaded = {}, loading = {};
+const PART_FILE = {};
+PARTS.forEach((p, i) => { PART_FILE[p.id] = 'data/' + p.id + '.js'; });
+
+function loadPart(i){
+  const p = PARTS[i];
+  if(!p) return Promise.reject(new Error('قسم غير معروف'));
+  if(loaded[p.id]) return Promise.resolve(loaded[p.id]);
+  if(loading[p.id]) return loading[p.id];
+  loading[p.id] = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = PART_FILE[p.id];
+    s.onload = () => {
+      const raw = (window.__BOOK__ && window.__BOOK__[p.id]) || null;
+      if(!raw){ reject(new Error('بيانات القسم فارغة')); return; }
+      const data = raw.flat ? raw.flat() : [].concat.apply([], raw);
+      loaded[p.id] = data;
+      resolve(data);
+    };
+    s.onerror = () => reject(new Error('تعذّر تحميل ملف القسم'));
+    document.head.appendChild(s);
+  });
+  return loading[p.id];
+}
+function partOfTopic(t){ return PARTS.findIndex(p => t >= p.t0 && t <= p.t1); }
+function partOfId(id){
+  const m = /^b(\d+)-/.exec(String(id));
+  return m ? partOfTopic(parseInt(m[1], 10)) : -1;
+}
+function buildIndexes(){
+  PAGES = []; PAGE_INDEX = {}; TOPICS = [];
+  PART.forEach(sh => {
+    const key = sh.topicNo + '\u0000' + sh.sp;
+    if(!(key in PAGE_INDEX)){
+      PAGE_INDEX[key] = PAGES.length;
+      PAGES.push({ topicNo:sh.topicNo, topic:sh.topic, sp:sh.sp, items:[] });
+    }
+    PAGES[PAGE_INDEX[key]].items.push(sh);
+  });
+  PART.forEach(sh => { if(TOPICS.indexOf(sh.topicNo) < 0) TOPICS.push(sh.topicNo); });
+}
+function pagesOfTopic(t){ return PAGES.filter(p => p.topicNo === t); }
+function topicName(t){ const p = PAGES.find(x => x.topicNo === t); return p ? p.topic : ''; }
+function activePage(){ return PAGES[state.page] || PAGES[0]; }
+function activeTopicNo(){ const p = activePage(); return p ? p.topicNo : (TOPICS[0] || 0); }
+function shahidText(sh){ return state.edits[sh.id] !== undefined ? state.edits[sh.id] : sh.text; }
+function byId(id){ return PART.find(b => b.id === id); }
+function visitedKey(i, page){ return PARTS[i].id + ':' + page; }
+
+/* ---------- look ---------- */
+function applyLook(){
+  document.documentElement.style.setProperty('--reader-font', state.fontFamily);
+  document.documentElement.style.setProperty('--reader-size', state.fontSize + 'px');
+  document.documentElement.style.setProperty('--hl-color', state.hlColor);
+  $('#fsVal').textContent = state.fontSize;
+  $('#setFsVal').textContent = state.fontSize + 'px';
+  const names = Object.keys(FONTS);
+  $('#fontSel').value = names.find(n => FONTS[n] === state.fontFamily) || 'Readex Pro';
+  $$('#hlSwatches .swatch').forEach(b => b.classList.toggle('active', b.dataset.color === state.hlColor));
+  $('#hideAjzBtn').textContent = state.hideAjz ? '👁️ إظهار العجز' : '🙈 إخفاء العجز للاستظهار';
+  $('#hideAjzBtn').className = 'btn btn-sm ' + (state.hideAjz ? 'btn-accent' : 'btn-soft');
+  const sub = $('#brandSub');
+  if(PARTS.length){
+    const p = PARTS[state.part] || PARTS[0];
+    sub.textContent = 'أبو الفرج الأصفهاني • القسم ' + (state.part+1) + ' من ' + PARTS.length + ' — ' + p.title;
+  }
+}
+function memClass(v){ return v === 2 ? 'btn-ok' : v === 1 ? 'btn-soft' : ''; }
+
+/* ---------- toast ---------- */
+let toastTimer = null;
+function toast(msg){
+  const t = $('#toast');
+  if(!t) return;
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+/* ---------- highlights ---------- */
+function markText(str, sid){
+  const hs = (state.highs || []).filter(h => h.sid === sid && h.text);
+  let segs = [{t:String(str), h:null}];
+  hs.forEach(h => {
+    let next = [];
+    segs.forEach(s => {
+      if(s.h){ next.push(s); return; }
+      const parts = s.t.split(h.text);
+      if(parts.length === 1){ next.push(s); return; }
+      parts.forEach((p, i) => {
+        if(p) next.push({t:p, h:null});
+        if(i < parts.length - 1) next.push({t:h.text, h:h});
+      });
+    });
+    segs = next;
+  });
+  return segs.map(s => s.h
+    ? '<mark class="hl' + (s.h.note ? ' hl-has-note' : '') + '" data-hid="' + escapeHtml(s.h.id) + '" title="' + escapeHtml(s.h.note || '') + '">' + escapeHtml(s.t) + '</mark>'
+    : escapeHtml(s.t)).join('');
+}
+
+/* ---------- rendering ---------- */
+function verseGroups(lines){
+  const groups = []; let cur = null;
+  lines.forEach(ln => {
+    if(ln.startsWith('(') && ln.endsWith(')')){ if(!cur){ cur=[]; groups.push(cur); } cur.push(ln); }
+    else cur = null;
+  });
+  return groups;
+}
+function attributionOf(text){ return text.split('\n').find(l => !(l.startsWith('(') && l.endsWith(')'))) || ''; }
+function poemHtml(group, sid, gi){
+  const key = sid + '#v' + gi;
+  const rows = group.map((ln, vi) => {
+    const p = parse(ln);
+    if(!p) return '<div class="verse-row" data-vi="' + vi + '">' + markText(ln, sid) + '</div>';
+    return '<div class="verse-row" data-vi="' + vi + '"><span class="verse-sadr">' + markText(p.sadr, sid) + '</span>' +
+      '<span class="verse-ajz' + (state.hideAjz && p.ajz ? ' ajz-veiled' : '') + '">' + markText(p.ajz, sid) + '</span></div>';
+  }).join('');
+  return '<div class="poem-box" data-pkey="' + escapeHtml(key) + '">' + rows +
+    '<div class="poem-actions">' +
+      '<button class="btn btn-sm" data-act="copyV" data-key="' + escapeHtml(key) + '">📋 نسخ</button>' +
+      '<button class="btn btn-sm ' + (state.favV[key] ? 'btn-soft' : '') + '" data-act="favV" data-key="' + escapeHtml(key) + '">' + (state.favV[key] ? '★ مفضل' : '☆ تفضيل') + '</button>' +
+      '<button class="btn btn-sm ' + memClass(state.memV[key] || 0) + '" data-act="memV" data-key="' + escapeHtml(key) + '">' + MEM_LABEL[state.memV[key] || 0] + '</button>' +
+    '</div></div>';
+}
+function refButton(sh){
+  if(!sh.partialRef) return '';
+  return '<button class="badge badge-ref" data-act="gotoRef" data-id="' + escapeHtml(sh.id) + '">↗ البيت كامل</button>';
+}
+function shahidHtml(sh){
+  const id = sh.id, text = shahidText(sh), edited = Object.prototype.hasOwnProperty.call(state.edits, id);
+  const lines = text.split('\n'), groups = verseGroups(lines);
+  const lineGroup = []; let gcur = -1;
+  lines.forEach((ln, i) => {
+    if(ln.startsWith('(') && ln.endsWith(')')){ if(i === 0 || !(lines[i-1].startsWith('(') && lines[i-1].endsWith(')'))) gcur++; lineGroup[i] = gcur; }
+  });
+  let body = ''; const done = new Set();
+  lines.forEach((ln, i) => {
+    if(ln.startsWith('(') && ln.endsWith(')')){ const gi = lineGroup[i]; if(!done.has(gi)){ body += poemHtml(groups[gi], id, gi); done.add(gi); } }
+    else body += '<p class="prose-line">' + markText(ln, id) + '</p>';
+  });
+  const mem = state.mem[id] || 0, hasNote = !!(state.notes[id] || '').trim();
+  return '<article class="card" data-id="' + escapeHtml(id) + '">' +
+    '<div class="card-head"><div><span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span></div>' +
+      '<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">' +
+      (sh.partial ? '<span class="badge badge-partial" title="شطر مفرد في المصدر">شطر</span>' : '') +
+      refButton(sh) +
+      (edited ? '<span class="badge badge-edited">معدَّل</span>' : '') + '</div></div>' +
+    '<div class="shahid-body">' + body + '</div>' +
+    '<div class="card-foot">' +
+      '<button class="btn btn-sm ' + (state.fav[id] ? 'btn-soft' : '') + '" data-act="fav" data-id="' + escapeHtml(id) + '">' + (state.fav[id] ? '★ بطاقة مفضلة' : '☆ تفضيل البطاقة') + '</button>' +
+      '<button class="btn btn-sm ' + memClass(mem) + '" data-act="mem" data-id="' + escapeHtml(id) + '">' + MEM_LABEL[mem] + '</button>' +
+      '<button class="btn btn-sm" data-act="copy" data-id="' + escapeHtml(id) + '">📋 نسخ</button>' +
+      '<button class="btn btn-sm ' + (hasNote ? 'btn-soft' : '') + '" data-act="note" data-id="' + escapeHtml(id) + '">📝 ' + (hasNote ? 'ملاحظتي ✓' : 'ملاحظة') + '</button>' +
+      '<button class="btn btn-sm" data-act="edit" data-id="' + escapeHtml(id) + '">تصحيح النص</button>' +
+    '</div>' +
+    '<div class="edit-box" data-box="edit" hidden><textarea class="edarea" data-id="' + escapeHtml(id) + '">' + escapeHtml(text) + '</textarea>' +
+      '<div class="edit-actions"><button class="btn btn-sm btn-accent" data-act="saveEdit" data-id="' + escapeHtml(id) + '">حفظ</button>' +
+      '<button class="btn btn-sm" data-act="cancelEdit" data-id="' + escapeHtml(id) + '">إلغاء</button>' +
+      '<button class="btn btn-sm" data-act="resetEdit" data-id="' + escapeHtml(id) + '">استرجاع الأصل</button></div></div>' +
+    '<div class="note-box" data-box="note" hidden>' +
+      '<label><span>📝 ملاحظتي</span><button class="btn btn-sm btn-soft" data-act="saveNote" data-id="' + escapeHtml(id) + '">💾 حفظ</button></label>' +
+      '<textarea class="notearea" data-id="' + escapeHtml(id) + '" placeholder="اكتب ملاحظتك هنا…">' + escapeHtml(state.notes[id] || '') + '</textarea></div>' +
+  '</article>';
+}
+function safeCard(sh){
+  try { return shahidHtml(sh); }
+  catch(e){
+    return '<article class="card" data-id="' + escapeHtml(sh.id) + '">' +
+      '<div class="card-head"><span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span></div>' +
+      '<div class="shahid-body"><div class="prose-line">' + escapeHtml(shahidText(sh)).replace(/\n/g, '<br>') + '</div></div></article>';
+  }
+}
+function showFatal(msg){
+  const c = $('#cards'); if(!c) return;
+  const mark = 'fatal-' + msg;
+  if(c.querySelector('div[data-fatal="' + mark + '"]')) return;
+  const d = document.createElement('div');
+  d.className = 'empty-msg'; d.dataset.fatal = mark;
+  d.textContent = 'تعذّر عرض المحتوى بجزئه الكامل: ' + msg;
+  c.appendChild(d);
+}
+window.addEventListener('error', e => showFatal(e.message));
+window.addEventListener('unhandledrejection', e => showFatal(e.reason && e.reason.message || 'خطأ غير متوقع'));
+
+function renderStrip(){
+  const strip = $('#secStrip');
+  const act = activeTopicNo();
+  strip.innerHTML = TOPICS.map(t =>
+    '<button class="sec-pill ' + (act === t ? 'active' : '') + '" data-topic="' + t + '">' +
+      '<span>' + escapeHtml(topicName(t)) + '</span><span class="cnt">' + pagesOfTopic(t).length + '</span></button>').join('');
+  const on = strip.querySelector('.active'); if(on) on.scrollIntoView({block:'nearest', inline:'center'});
+}
+function renderRead(){
+  if(!PAGES.length) return;
+  if(state.page < 0 || state.page >= PAGES.length) state.page = 0;
+  const p = activePage(), ps = pagesOfTopic(p.topicNo);
+  renderStrip();
+  const first = p.items[0] || {};
+  $('#secName').textContent = p.topic;
+  $('#pagePos').textContent = (first.sec ? first.sec + ' · ' : '') + 'صفحة ' + (ps.indexOf(p) + 1) + ' من ' + ps.length +
+    (first.page ? ' · ' + first.page : '') + ' · القسم ' + (state.part + 1) + '/' + PARTS.length;
+  $('#spSelect').innerHTML = ps.map((q, i) =>
+    '<option value="' + PAGES.indexOf(q) + '"' + (q === p ? ' selected' : '') + '>صفحة ' + (i+1) + ': ' +
+    escapeHtml((q.items[0] && q.items[0].spl) || '') + '</option>').join('');
+  $('#cards').innerHTML = p.items.map(safeCard).join('');
+  state.visited[visitedKey(state.part, state.page)] = true; save(); renderStats();
+}
+function stats(){
+  return {
+    pages:Object.keys(state.visited).length,
+    mem:Object.keys(state.mem).filter(k => state.mem[k] === 2).length + Object.keys(state.memV).filter(k => state.memV[k] === 2).length,
+    fav:Object.keys(state.fav).length + Object.keys(state.favV).length,
+    notes:Object.keys(state.notes).filter(k => (state.notes[k]||'').trim()).length,
+    hl:(state.highs||[]).length,
+    edits:Object.keys(state.edits).length
+  };
+}
+function renderStats(){
+  const s = stats();
+  $('#stats').innerHTML =
+    '<span>📄 مقروءة <strong>' + s.pages + '</strong></span><span>🎓 محفوظ <strong>' + s.mem + '</strong></span>' +
+    '<span>★ مفضلة <strong>' + s.fav + '</strong></span><span>📝 ملاحظات <strong>' + s.notes + '</strong></span>' +
+    '<span>🖍 تظليلات <strong>' + s.hl + '</strong></span>';
+  $('#setStats').innerHTML =
+    '<div><span>شاهد</span><b>' + (META.cards || 0) + '</b></div><div><span>صفحة</span><b>' + (META.pages || 0) + '</b></div>' +
+    '<div><span>مقروءة</span><b>' + s.pages + '</b></div><div><span>محفوظ</span><b>' + s.mem + '</b></div>' +
+    '<div><span>مفضلة</span><b>' + s.fav + '</b></div><div><span>ملاحظات</span><b>' + s.notes + '</b></div>' +
+    '<div><span>تظليلات</span><b>' + s.hl + '</b></div><div><span>تعديلات</span><b>' + s.edits + '</b></div>';
+}
+async function openPart(i, page, sid){
+  if(i < 0 || i >= PARTS.length) return;
+  $('#readLoading').hidden = false; $('#readBody').hidden = true;
+  try{
+    PART = await loadPart(i);
+    state.part = i;
+    buildIndexes();
+    state.page = (typeof page === 'number' && page >= 0 && page < PAGES.length) ? page : 0;
+    save();
+    $('#readLoading').hidden = true; $('#readBody').hidden = false;
+    applyLook();
+    renderRead();
+    if(sid){ const el = $('#cards .card[data-id="' + sid + '"]'); if(el) el.scrollIntoView({block:'center'}); }
+    window.scrollTo({top:0});
+  }catch(e){
+    $('#readLoading').hidden = false;
+    $('#readLoading').textContent = 'تعذّر تحميل القسم: ' + e.message + ' — تأكد من وجود مجلد data بجانب index.html.';
+  }
+}
+function gotoPage(i, sid){
+  if(i < 0 || i >= PAGES.length) return;
+  state.page = i; save(); renderRead();
+  if(sid){ const el = $('#cards .card[data-id="' + sid + '"]'); if(el) el.scrollIntoView({block:'center'}); }
+  window.scrollTo({top:0});
+}
+function gotoShahid(id){
+  if(partOfId(id) < 0) return;
+  setTab('read');
+  return gotoShahidAsync(id);
+}
+async function gotoRef(id){
+  const sh = byId(id); if(!sh || !sh.partialRef) return;
+  const ref = sh.partialRef;
+  await gotoShahidAsync(ref.sid);
+  setTimeout(() => {
+    const box = document.querySelector('[data-pkey="' + ref.sid + '#v' + ref.gi + '"]');
+    if(!box) return;
+    box.scrollIntoView({block:'center'});
+    const row = box.querySelector('.verse-row[data-vi="' + ref.vi + '"]');
+    if(row){ row.classList.add('verse-flash'); setTimeout(() => row.classList.remove('verse-flash'), 2200); }
+  }, 120);
+}
+function gotoShahidAsync(id){
+  return new Promise(resolve => {
+    const pi = partOfId(id);
+    if(pi < 0){ resolve(); return; }
+    const go = () => {
+      const data = loaded[PARTS[pi].id];
+      const sh = data && data.find(x => x.id === id);
+      if(!sh){ resolve(); return; }
+      if(pi !== state.part){
+        openPart(pi, 0).then(() => {
+          const target = byId(id);
+          if(target){
+            const idx = PAGE_INDEX[target.topicNo + '\u0000' + target.sp];
+            if(typeof idx === 'number') gotoPage(idx, id);
+          }
+          resolve();
+        });
+      } else {
+        gotoPage(PAGE_INDEX[sh.topicNo + '\u0000' + sh.sp], id);
+        resolve();
+      }
+    };
+    if(loaded[PARTS[pi].id]) go();
+    else loadPart(pi).then(go).catch(() => resolve());
+  });
+}
+
+/* ---------- card interactions ---------- */
+$('#cards').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-act]');
+  if(btn){
+    const act = btn.dataset.act, id = btn.dataset.id, key = btn.dataset.key;
+    if(act === 'fav' && id){ state.fav[id] ? delete state.fav[id] : state.fav[id] = 1; }
+    else if(act === 'favV' && key){ toggleFavV(key); }
+    else if(act === 'mem' && id){ state.mem[id] = ((state.mem[id]||0)+1)%3; if(!state.mem[id]) delete state.mem[id]; }
+    else if(act === 'memV' && key){ toggleMemV(key); }
+    else if(act === 'copy' && id){ copyShahid(id); return; }
+    else if(act === 'copyV' && key){ copyPoem(key); return; }
+    else if(act === 'gotoRef' && id){ gotoRef(id); return; }
+    else if(act === 'note' && id){ const card = btn.closest('.card'); const box = card.querySelector('[data-box="note"]'); box.hidden = !box.hidden; return; }
+    else if(act === 'saveNote' && id){ state.notes[id] = btn.closest('.card').querySelector('.notearea').value; save(); toast('تم حفظ الملاحظة'); renderRead(); return; }
+    else if(act === 'edit' && id){ const card = btn.closest('.card'); card.querySelector('.shahid-body').hidden = true; card.querySelector('.card-foot').hidden = true; card.querySelector('[data-box="edit"]').hidden = false; return; }
+    else if(act === 'saveEdit' && id){ state.edits[id] = btn.closest('.card').querySelector('.edarea').value; save(); toast('تم حفظ التعديل'); renderRead(); return; }
+    else if(act === 'cancelEdit'){ renderRead(); return; }
+    else if(act === 'resetEdit' && id){ delete state.edits[id]; save(); toast('تمت استعادة الأصل'); renderRead(); return; }
+    save(); renderRead(); return;
+  }
+  const ajz = e.target.closest('.ajz-veiled'); if(ajz){ ajz.classList.add('revealed'); return; }
+  const mk = e.target.closest('mark[data-hid]'); if(mk) openHighlight(mk.dataset.hid);
+});
+$('#cards').addEventListener('input', e => { if(e.target.classList.contains('notearea')){ state.notes[e.target.dataset.id] = e.target.value; save(); } });
+function toggleFavV(key){
+  if(state.favV[key]){ delete state.favV[key]; return; }
+  const sh = byId(key.split('#')[0]);
+  const gi = parseInt(key.split('#v')[1], 10);
+  const g = sh ? verseGroups(shahidText(sh).split('\n'))[gi] : null;
+  state.favV[key] = { t:g ? g.join('\n') : '', p:state.part };
+}
+function toggleMemV(key){
+  const v = ((state.memV[key] && state.memV[key].v) || 0);
+  const nv = (v + 1) % 3;
+  if(!nv){ delete state.memV[key]; return; }
+  const sh = byId(key.split('#')[0]);
+  const gi = parseInt(key.split('#v')[1], 10);
+  const g = sh ? verseGroups(shahidText(sh).split('\n'))[gi] : null;
+  state.memV[key] = { v:nv, t:g ? g.join('\n') : '', p:state.part };
+}
+function memVState(key){ const o = state.memV[key]; return o ? (o.v || 0) : 0; }
+function copyText(t){
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(()=>toast('تم النسخ'), ()=>fallbackCopy(t));
+  else fallbackCopy(t);
+}
+function fallbackCopy(t){
+  const ta = document.createElement('textarea'); ta.value = t; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); toast('تم النسخ'); }catch(e){ toast('تعذّر النسخ'); } document.body.removeChild(ta);
+}
+function copyShahid(id){
+  const sh = byId(id); if(!sh) return;
+  const text = shahidText(sh), attr = attributionOf(text);
+  copyText((attr ? attr + '\n' : '') + text);
+}
+function copyPoem(key){
+  const sid = key.split('#')[0], sh = byId(sid); if(!sh) return;
+  const text = shahidText(sh), attr = attributionOf(text);
+  const g = verseGroups(text.split('\n'))[parseInt(key.split('#v')[1], 10)] || [];
+  copyText((attr ? attr + '\n' : '') + g.join('\n'));
+}
+
+/* ---------- highlight modal ---------- */
+let pendingSel = null, editingHid = null;
+document.addEventListener('selectionchange', () => {
+  const sel = window.getSelection(), btn = $('#hlFloatBtn');
+  if(!sel || sel.isCollapsed || !sel.toString().trim()){ btn.style.display = 'none'; return; }
+  const node = sel.anchorNode, el = node && (node.nodeType === 1 ? node : node.parentElement);
+  if(!el || el.closest('textarea,input') || !el.closest('.shahid-body')){ btn.style.display = 'none'; return; }
+  pendingSel = { text:sel.toString().trim(), sid:el.closest('.card').dataset.id };
+  btn.style.display = 'block';
+});
+$('#hlFloatBtn').addEventListener('click', () => {
+  if(!pendingSel) return;
+  editingHid = null;
+  $('#hlQuote').textContent = '«' + pendingSel.text + '»';
+  $('#hlNote').value = ''; $('#hlDelete').style.display = 'none';
+  $('#hlModal').style.display = 'flex'; $('#hlFloatBtn').style.display = 'none';
+  window.getSelection().removeAllRanges();
+});
+function openHighlight(hid){
+  const h = (state.highs||[]).find(x => x.id === hid); if(!h) return;
+  editingHid = hid;
+  $('#hlQuote').textContent = '«' + h.text + '»';
+  $('#hlNote').value = h.note || ''; $('#hlDelete').style.display = '';
+  $('#hlModal').style.display = 'flex';
+}
+$('#hlCancel').addEventListener('click', () => { $('#hlModal').style.display = 'none'; });
+$('#hlDelete').addEventListener('click', () => {
+  if(editingHid) state.highs = state.highs.filter(x => x.id !== editingHid);
+  save(); $('#hlModal').style.display = 'none'; renderRead(); toast('تم حذف التظليل');
+});
+$('#hlSave').addEventListener('click', () => {
+  const note = $('#hlNote').value;
+  if(editingHid){ const h = state.highs.find(x => x.id === editingHid); if(h) h.note = note; }
+  else if(pendingSel) state.highs.push({ id:'h'+Date.now()+Math.floor(Math.random()*1000), sid:pendingSel.sid, text:pendingSel.text, note:note, color:state.hlColor });
+  save(); $('#hlModal').style.display = 'none'; renderRead(); toast('تم حفظ التظليل');
+});
+
+/* ---------- today ---------- */
+function versesOf(text, sid){
+  const out = [];
+  verseGroups(String(text).split('\n')).forEach((g, gi) => g.forEach(ln => {
+    const p = parse(ln);
+    if(p) out.push({ sid:sid, key:sid+'#v'+gi, sadr:p.sadr, ajz:p.ajz });
+  }));
+  return out;
+}
+function storedVersePool(){
+  const out = [];
+  const push = (key, o) => {
+    if(!o || !o.t) return;
+    const lines = String(o.t).split('\n');
+    const p = lines.length ? parse(lines[0]) : null;
+    if(p) out.push({ sid:key.split('#')[0], key:key, sadr:p.sadr, ajz:p.ajz });
+  };
+  Object.keys(state.favV).forEach(k => push(k, state.favV[k]));
+  Object.keys(state.memV).forEach(k => push(k, state.memV[k]));
+  return out;
+}
+function renderToday(){
+  let pool = storedVersePool();
+  if(pool.length < 3){
+    const cur = [];
+    PART.forEach(sh => { if(state.fav[sh.id] || state.mem[sh.id] || state.memV[sh.id+'#v0']) versesOf(shahidText(sh), sh.id).forEach(v => cur.push(v)); });
+    pool = pool.concat(cur);
+  }
+  if(pool.length < 3){
+    PART.forEach(sh => versesOf(shahidText(sh), sh.id).forEach(v => pool.push(v)));
+  }
+  const rand = rng(hashStr(todayKey())), picks = [], used = {};
+  let guard = 0;
+  while(picks.length < 3 && pool.length && guard < 300){ guard++; const i = Math.floor(rand()*pool.length); if(!used[i]){ used[i]=1; picks.push(pool[i]); } }
+  $('#todayList').innerHTML = picks.length ? picks.map(v => {
+    const sh = byId(v.sid);
+    const head = sh ? '<span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span>' : '<span class="badge">من مختاراتك</span>';
+    return '<div class="card"><div class="card-head"><div>' + head + '</div>' +
+      '<button class="btn btn-sm btn-soft" data-goto="' + escapeHtml(v.sid) + '">الانتقال ↩</button></div>' +
+      '<div class="shahid-body"><div class="poem-box"><div class="verse-row"><span class="verse-sadr">' + escapeHtml(v.sadr) + '</span>' +
+      '<span class="verse-ajz' + (state.hideAjz && v.ajz ? ' ajz-veiled' : '') + '">' + escapeHtml(v.ajz) + '</span></div></div></div></div>';
+  }).join('') : '<div class="empty-msg">لا توجد أبيات بعد.</div>';
+}
+$('#todayList').addEventListener('click', e => {
+  const ajz = e.target.closest('.ajz-veiled'); if(ajz){ ajz.classList.add('revealed'); return; }
+  const c = e.target.closest('[data-goto]'); if(c) gotoShahid(c.dataset.goto);
+});
+$('#hideAjzBtn').addEventListener('click', () => { state.hideAjz = !state.hideAjz; save(); applyLook(); renderToday(); renderRead(); });
+
+/* ---------- favorites ---------- */
+function favCard(sh, extra){
+  return '<div class="card"><div class="card-head"><div><span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span></div>' +
+    '<button class="btn btn-sm btn-soft" data-goto="' + escapeHtml(sh.id) + '">الانتقال ↩</button></div>' +
+    '<div class="shahid-body">' + (extra || '<div>' + escapeHtml(attributionOf(shahidText(sh)).slice(0,160)) + '</div>') + '</div></div>';
+}
+function renderFav(){
+  const H = (state.highs||[]).map(h => { const sh = byId(h.sid); return sh ? favCard(sh, '<div class="shahid-body"><mark class="hl' + (h.note?' hl-has-note':'') + '">' + escapeHtml(h.text) + '</mark>' + (h.note ? '<div class="hint">📝 ' + escapeHtml(h.note) + '</div>' : '') + '</div>') : ''; });
+  const F = Object.keys(state.fav).map(id => byId(id) ? favCard(byId(id)) : '');
+  const FV = Object.keys(state.favV).map(k => {
+    const sh = byId(k.split('#')[0]);
+    const o = state.favV[k];
+    const rows = o && o.t ? o.t.split('\n').map(ln => { const p = parse(ln); return p ? '<div class="verse-row"><span class="verse-sadr">' + escapeHtml(p.sadr) + '</span><span class="verse-ajz">' + escapeHtml(p.ajz) + '</span></div>' : ''; }).join('') : '';
+    if(!rows) return '';
+    return sh ? favCard(sh, '<div class="poem-box">' + rows + '</div>')
+      : '<div class="card"><div class="card-head"><span class="badge">من قسم آخر</span></div><div class="poem-box">' + rows + '</div></div>';
+  });
+  const learning = Object.keys(state.mem).filter(k => state.mem[k] === 1).map(id => byId(id) ? favCard(byId(id)) : '');
+  const memorizedIds = Object.keys(state.mem).filter(k => state.mem[k] === 2)
+    .concat(Object.keys(state.memV).filter(k => memVState(k) === 2));
+  const memorized = memorizedIds.map(id => { const sh = byId(id.split('#')[0]); return sh ? favCard(sh) : ''; });
+  const N = Object.keys(state.notes).filter(k => (state.notes[k]||'').trim()).map(id => byId(id) ? favCard(byId(id), '<div>' + escapeHtml(state.notes[id]) + '</div>') : '');
+  const block = (t, arr) => arr.length ? '<div class="sec-title">' + t + ' (' + arr.length + ')</div>' + arr.join('') : '';
+  const html = block('🖍 التظليلات', H) + block('★ البطاقات المفضلة', F) + block('✨ الأبيات والمقطوعات المفضلة', FV) +
+    block('🌱 أحفظه', learning) + block('✅ حفظته', memorized) + block('📝 ملاحظاتي', N);
+  $('#favList').innerHTML = html || '<div class="empty-msg">لا توجد مختارات بعد. ابدأ بتفضيل بطاقة أو تظليل بيت.</div>';
+}
+$('#favList').addEventListener('click', e => { const c = e.target.closest('[data-goto]'); if(c) gotoShahid(c.dataset.goto); });
+
+/* ---------- search ---------- */
+let searchToken = 0;
+function resultCard(sh, sn, note){
+  return '<div class="card"><div class="card-head"><span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span>' +
+    '<button class="btn btn-sm btn-soft" data-goto="' + escapeHtml(sh.id) + '">الانتقال ↩</button></div>' +
+    '<div>' + (note ? '📝 ' : '…') + escapeHtml(sn) + '…</div></div>';
+}
+function scanPart(data, nq, q){
+  const res = [];
+  data.forEach(sh => {
+    const text = shahidText(sh);
+    const nt = normalizeAr(text);
+    const idx = nt.indexOf(nq);
+    if(idx >= 0){
+      let sn = text.replace(/\n/g,' ');
+      sn = sn.slice(Math.max(0, idx-35), idx + q.length + 80);
+      res.push(resultCard(sh, sn, false));
+    }
+    const note = state.notes[sh.id] || '';
+    if(note && normalizeAr(note).indexOf(nq) >= 0) res.push(resultCard(sh, note, true));
+  });
+  return res;
+}
+function renderSearchLocal(){
+  const q = $('#searchInput').value.trim();
+  if(!q){ $('#searchResults').textContent = 'اكتب كلمة أو عبارة للبحث.'; $('#searchStatus').textContent = ''; return; }
+  const nq = normalizeAr(q);
+  const res = scanPart(PART, nq, q);
+  $('#searchStatus').textContent = 'داخل القسم الحالي';
+  $('#searchResults').innerHTML = res.length ? '<div class="sec-title">النتائج (' + res.length + ')</div>' + res.join('') : '<div class="empty-msg">لم يُعثر على نتائج مطابقة في هذا القسم. جرّب «بحث في الكتاب كله».</div>';
+}
+async function searchAll(){
+  const q = $('#searchInput').value.trim();
+  if(!q) return;
+  const token = ++searchToken;
+  const nq = normalizeAr(q);
+  let all = [];
+  $('#searchStatus').textContent = 'جارٍ تحميل الأقسام…';
+  for(let i=0;i<PARTS.length;i++){
+    if(token !== searchToken) return;
+    $('#searchStatus').textContent = 'بحث في القسم ' + (i+1) + ' من ' + PARTS.length + '…';
+    try{
+      const data = await loadPart(i);
+      if(token !== searchToken) return;
+      all = all.concat(scanPart(data, nq, q));
+      $('#searchResults').innerHTML = '<div class="sec-title">النتائج حتى الآن (' + all.length + ')</div>' + all.join('');
+    }catch(e){}
+  }
+  if(token !== searchToken) return;
+  $('#searchStatus').textContent = 'في الكتاب كله';
+  $('#searchResults').innerHTML = all.length ? '<div class="sec-title">النتائج (' + all.length + ')</div>' + all.join('') : '<div class="empty-msg">لم يُعثر على نتائج مطابقة.</div>';
+}
+$('#searchInput').addEventListener('input', () => { searchToken++; renderSearchLocal(); });
+$('#searchAllBtn').addEventListener('click', searchAll);
+$('#searchResults').addEventListener('click', e => { const c = e.target.closest('[data-goto]'); if(c) gotoShahid(c.dataset.goto); });
+
+/* ---------- settings ---------- */
+$('#hlSwatches').innerHTML = HL_COLORS.map(c => '<button class="swatch" data-color="' + c.val + '" style="background:' + c.val + '" title="' + escapeHtml(c.name) + '"></button>').join('');
+$('#hlSwatches').addEventListener('click', e => {
+  const b = e.target.closest('.swatch'); if(!b) return;
+  state.hlColor = b.dataset.color; save(); applyLook(); renderRead(); toast('تم تغيير لون التظليل');
+});
+$('#fontSel').addEventListener('change', e => { state.fontFamily = FONTS[e.target.value] || FONTS['Readex Pro']; save(); applyLook(); });
+function setFs(d){ state.fontSize = Math.max(14, Math.min(44, state.fontSize + d)); save(); applyLook(); }
+$('#fsUp').addEventListener('click', () => setFs(2));
+$('#fsDown').addEventListener('click', () => setFs(-2));
+function download(name, content, type){
+  const blob = new Blob([content], {type:type || 'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+$('#expJson').addEventListener('click', () => { download('aghani-backup-' + todayKey() + '.json', JSON.stringify(state, null, 2), 'application/json'); toast('تم تصدير النسخة'); });
+$('#impJson').addEventListener('click', () => $('#fileInput').click());
+$('#fileInput').addEventListener('change', e => {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = () => { try{ state = Object.assign({}, DEFAULT, JSON.parse(r.result)); save(); applyLook(); renderRead(); renderStats(); toast('تم استيراد النسخة'); }catch(err){ toast('ملف غير صالح'); } };
+  r.readAsText(f); e.target.value = '';
+});
+$('#expMd').addEventListener('click', () => {
+  const L = ['# كشكول الأغاني — مختاراتي', '', 'التاريخ: ' + todayKey(), ''];
+  L.push('## التظليلات');
+  (state.highs||[]).forEach(h => L.push('- **' + h.text + '**' + (h.note ? ' — ' + h.note : '') + ' [' + h.sid + ']'));
+  L.push('', '## الأبيات المحفوظة والمفضلة');
+  storedVersePool().forEach(v => L.push('- ' + v.sadr + (v.ajz ? ' ... ' + v.ajz : '') + ' [' + v.sid + ']'));
+  L.push('', '## الملاحظات');
+  Object.keys(state.notes).forEach(id => { if((state.notes[id]||'').trim()) L.push('- **[' + id + ']**: ' + state.notes[id]); });
+  L.push('', '## التعديلات');
+  Object.keys(state.edits).forEach(id => L.push('- **[' + id + ']**: ' + state.edits[id].replace(/\n/g,' / ')));
+  download('aghani-notes-' + todayKey() + '.md', L.join('\n'), 'text/markdown;charset=utf-8');
+  toast('تم تصدير Markdown');
+});
+$('#resetAll').addEventListener('click', () => {
+  if(confirm('سيتم حذف كل الملاحظات والتعديلات والمفضلة على هذا الجهاز. هل أنت متأكد؟')){
+    state = Object.assign({}, DEFAULT); save(); applyLook(); renderRead(); renderStats(); toast('تمت إعادة الضبط');
+  }
+});
+
+/* ---------- parts sheet ---------- */
+function renderParts(){
+  $('#partsList').innerHTML = PARTS.map((p, i) =>
+    '<div class="part-row ' + (i === state.part ? 'active' : '') + '" data-part="' + i + '">' +
+      '<div><div class="pt">' + (i+1) + '. ' + escapeHtml(p.title) + '</div>' +
+      '<div class="pv">الجزء ' + p.vols.join(' + ') + ' · ' + p.topics + ' باباً</div></div>' +
+      '<div class="pn">' + p.pages + ' صفحة</div></div>').join('');
+}
+$('#partsBtn').addEventListener('click', () => { renderParts(); $('#partsModal').style.display = 'flex'; });
+$('#partsClose').addEventListener('click', () => { $('#partsModal').style.display = 'none'; });
+$('#partsList').addEventListener('click', e => {
+  const r = e.target.closest('[data-part]'); if(!r) return;
+  $('#partsModal').style.display = 'none';
+  setTab('read');
+  openPart(parseInt(r.dataset.part, 10), 0);
+});
+
+/* ---------- navigation ---------- */
+function setTab(tab){
+  $$('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  ['read','today','fav','search','settings'].forEach(t => { $('#tab-'+t).hidden = (t !== tab); });
+  if(tab === 'today') renderToday();
+  if(tab === 'fav') renderFav();
+  if(tab === 'search') renderSearchLocal();
+  window.scrollTo({top:0});
+}
+$$('.tab-btn').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+$('#secStrip').addEventListener('click', e => {
+  const b = e.target.closest('[data-topic]'); if(!b) return;
+  const ps = pagesOfTopic(parseInt(b.dataset.topic, 10));
+  if(ps.length) gotoPage(PAGES.indexOf(ps[0]));
+});
+$('#spSelect').addEventListener('change', e => gotoPage(parseInt(e.target.value, 10)));
+async function stepPage(d){
+  let i = state.page + d;
+  if(i >= 0 && i < PAGES.length){ gotoPage(i); return; }
+  if(d > 0 && state.part < PARTS.length - 1){
+    await openPart(state.part + 1, 0);
+  } else if(d < 0 && state.part > 0){
+    await openPart(state.part - 1, 0);
+    gotoPage(PAGES.length - 1);
+  }
+}
+['prevBtn','prevBtnBottom'].forEach(id => $('#'+id).addEventListener('click', () => stepPage(-1)));
+['nextBtn','nextBtnBottom'].forEach(id => $('#'+id).addEventListener('click', () => stepPage(1)));
+$('#bmBtn').addEventListener('click', () => {
+  const p = activePage();
+  state.bm = { part:state.part, page:state.page, sid:p && p.items[0] ? p.items[0].id : null };
+  save(); toast('تم حفظ مكان القراءة');
+});
+$('#myPos').addEventListener('click', () => {
+  if(state.bm && typeof state.bm.page === 'number'){
+    if(state.bm.part === state.part) gotoPage(state.bm.page, state.bm.sid);
+    else openPart(state.bm.part, state.bm.page, state.bm.sid);
+    toast('تم الانتقال إلى موضعك');
+  } else toast('لم تحفظ مكاناً بعد');
+});
+window.addEventListener('scroll', () => { $('#scrollTopBtn').style.display = window.scrollY > 300 ? 'flex' : 'none'; }, {passive:true});
+$('#scrollTopBtn').addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+/* ---------- init ---------- */
+applyLook();
+if(!PARTS.length){
+  $('#readLoading').textContent = 'تعذّر قراءة فهرس الأقسام (data/manifest.js).';
+} else {
+  const p = (state.part >= 0 && state.part < PARTS.length) ? state.part : 0;
+  openPart(p, state.page);
+}
+</script>
+</body>
+</html>
