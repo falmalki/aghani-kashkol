@@ -124,6 +124,12 @@ body{padding-top:env(safe-area-inset-top);padding-bottom:calc(74px + env(safe-ar
 }
 .verse-ajz.ajz-veiled,.ajz-veiled{filter:blur(6px);opacity:.28;cursor:pointer;transition:filter .2s,opacity .2s;user-select:none}
 .ajz-veiled.revealed{filter:none;opacity:1}
+@media(max-width:600px){
+  .verse-sadr,.verse-ajz{display:block;width:100%}
+}
+.loc{font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap}
+.back-bar{margin-bottom:10px}
+.back-bar:empty{display:none}
 mark.hl{background:var(--hl-color);color:inherit;padding:1px 3px;border-radius:4px;cursor:pointer}
 mark.hl-has-note{border-bottom:2px solid var(--accent)}
 .card-foot{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
@@ -243,9 +249,10 @@ mark.hl-has-note{border-bottom:2px solid var(--accent)}
   <section id="tab-read">
     <div id="readLoading" class="loading">جارٍ تحميل القسم…</div>
     <div id="readBody" hidden>
+      <div id="readBackBar" class="back-bar"></div>
       <div id="secStrip" class="sec-strip"></div>
       <div class="main-sec-banner"><strong id="secName">—</strong><span id="pagePos">—</span></div>
-      <div class="chap-bar"><select id="spSelect" class="chap-select" aria-label="صفحات هذا الباب"></select></div>
+      <div class="chap-bar"><select id="spSelect" class="chap-select" aria-label="صفحات هذا الباب"></select><button class="btn btn-sm" id="locBtn">📍 الموقع</button></div>
       <div class="nav-row">
         <button class="btn btn-sm" id="prevBtn">→ السابق</button>
         <button class="btn btn-sm btn-soft" id="myPos">🔖 موضعي</button>
@@ -278,6 +285,7 @@ mark.hl-has-note{border-bottom:2px solid var(--accent)}
       <button class="btn btn-sm btn-soft" id="searchAllBtn">🔎 بحث في الكتاب كله</button>
       <span class="hint" id="searchStatus" style="margin:0"></span>
     </div>
+    <button class="btn btn-sm btn-soft back-bar" id="searchBackBtn" hidden>← العودة إلى القراءة</button>
     <div id="searchResults" class="hint">اكتب كلمة أو عبارة للبحث.</div>
   </section>
 
@@ -347,6 +355,18 @@ mark.hl-has-note{border-bottom:2px solid var(--accent)}
   </div>
 </div>
 
+<div class="modal-backdrop" id="locModal">
+  <div class="modal-card">
+    <h3>📍 الانتقال إلى موقع</h3>
+    <input id="locInput" class="search-input" type="number" min="1" inputmode="numeric" placeholder="رقم الموقع">
+    <div class="hint" id="locHint"></div>
+    <div class="edit-actions" style="justify-content:flex-end">
+      <button class="btn btn-sm" id="locCancel">إلغاء</button>
+      <button class="btn btn-sm btn-accent" id="locGo">انتقال</button>
+    </div>
+  </div>
+</div>
+
 <nav class="tabbar" aria-label="التنقل الرئيسي">
   <button class="tab-btn active" data-tab="read"><span class="ico">📖</span><span>القراءة</span></button>
   <button class="tab-btn" data-tab="today"><span class="ico">☀️</span><span>أبيات اليوم</span></button>
@@ -355,11 +375,11 @@ mark.hl-has-note{border-bottom:2px solid var(--accent)}
   <button class="tab-btn" data-tab="settings"><span class="ico">⚙️</span><span>الإعدادات</span></button>
 </nav>
 
-<script src="data/manifest.js?v=3"></script>
+<script src="data/manifest.js?v=4"></script>
 <script>
 "use strict";
 /* غيّر رقم الإصدار هذا عند كل تحديث لملفات data كي لا يخدم المتصفح نسخة قديمة */
-const DATA_VERSION = 3;
+const DATA_VERSION = 4;
 /* ---------- helpers ---------- */
 const $ = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
@@ -368,12 +388,13 @@ const PARSE_RE = /^\((.*?)\s*\.{3,}\s*(.*)\)$/;
 function parse(line){ const m = String(line).match(PARSE_RE); return m ? {sadr:m[1].trim(), ajz:m[2].trim()} : null; }
 function normalizeAr(s){ return String(s || '').replace(/[\u064B-\u0652\u0640]/g, ''); }
 function tidyText(t){ return String(t || '').split('\n').filter(l => l.trim()).join('\n'); }
+function fmtNum(n){ try { return Number(n).toLocaleString('ar-EG'); } catch(e) { return String(n); } }
 function todayKey(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
 function hashStr(s){ let h = 2166136261; for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 function rng(seed){ let x = seed || 1; return function(){ x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; }
 
 /* ---------- state ---------- */
-const KEY = 'aghani-v1';
+const KEY = 'aghani-v2';
 const FONTS = {
   'Readex Pro':"'Readex Pro',system-ui,-apple-system,sans-serif",
   'Amiri':"'Amiri',serif",
@@ -552,7 +573,7 @@ function shahidHtml(sh){
   const mem = state.mem[id] || 0, hasNote = !!(state.notes[id] || '').trim();
   return '<article class="card" data-id="' + escapeHtml(id) + '">' +
     '<div class="card-head"><div><span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span></div>' +
-      '<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">' +
+      '<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center"><span class="loc">📍 الموقع ' + fmtNum(sh.loc || '') + '</span>' +
       (sh.song ? '<span class="badge badge-song" title="صوت — قطعة غنائية في الأغاني">🎵' + (sh.song > 1 ? ' ×' + sh.song : '') + '</span>' : '') +
       (sh.partial ? '<span class="badge badge-partial" title="شطر مفرد في المصدر">شطر</span>' : '') +
       refButton(sh) +
@@ -706,6 +727,46 @@ function gotoShahidAsync(id){
     if(loaded[PARTS[pi].id]) go();
     else loadPart(pi).then(go).catch(() => resolve());
   });
+}
+
+/* ---------- reading location + return-to-reading ---------- */
+let readReturn = null;
+let currentTab = 'read';
+function renderReadBackBar(){
+  const bar = $('#readBackBar');
+  if(bar) bar.innerHTML = readReturn
+    ? '<button class="btn btn-sm btn-soft" id="readBackBtn">← رجوع إلى موضع القراءة ' + (readReturn.loc ? '(' + fmtNum(readReturn.loc) + ')' : '') + '</button>'
+    : '';
+  const b = $('#searchBackBtn'); if(b) b.hidden = !readReturn;
+}
+function captureReadReturn(){
+  const p = activePage(), first = p && p.items[0];
+  readReturn = { part:state.part, page:state.page, sid:first ? first.id : null,
+                 scrollY:window.scrollY, loc:first ? first.loc : null };
+  renderReadBackBar();
+}
+function restoreRead(){
+  if(!readReturn) return;
+  const r = readReturn;
+  const go = () => {
+    if(r.part === state.part){ state.page = r.page; save(); renderRead(); }
+    else openPart(r.part, r.page);
+    const at = () => {
+      window.scrollTo({top:r.scrollY, behavior:'instant'});
+      requestAnimationFrame(() => { if(Math.abs(window.scrollY - r.scrollY) > 2) window.scrollTo({top:r.scrollY, behavior:'instant'}); });
+    };
+    setTimeout(at, 80);
+  };
+  if(loaded[PARTS[r.part].id]) go();
+  else loadPart(r.part).then(go).catch(() => {});
+}
+async function gotoLoc(n){
+  n = Math.max(1, Math.min(META.cards || 0, parseInt(n, 10) || 1));
+  const pi = PARTS.findIndex(p => n >= p.loc0 && n <= p.loc1);
+  if(pi < 0) return;
+  if(pi !== state.part) await openPart(pi, 0);
+  const sh = PART.find(x => x.loc === n);
+  if(sh) gotoPage(PAGE_INDEX[sh.topicNo + '\u0000' + sh.sp], sh.id);
 }
 
 /* ---------- card interactions ---------- */
@@ -889,7 +950,8 @@ let searchToken = 0;
 function resultCard(sh, sn, note){
   return '<div class="card"><div class="card-head"><span class="badge">' + escapeHtml(sh.bab) + '</span> <span>' + escapeHtml(sh.sec) + '</span>' +
     '<button class="btn btn-sm btn-soft" data-goto="' + escapeHtml(sh.id) + '">الانتقال ↩</button></div>' +
-    '<div>' + (note ? '📝 ' : '…') + escapeHtml(sn) + '…</div></div>';
+    '<div>' + (note ? '📝 ' : '…') + escapeHtml(sn) + '…</div>' +
+    '<div class="hint" style="margin-top:6px"><button class="btn btn-sm btn-soft" data-goto="' + escapeHtml(sh.id) + '">📍 الموقع ' + fmtNum(sh.loc || '') + ' ←</button></div></div>';
 }
 function scanPart(data, nq, q){
   const res = [];
@@ -983,6 +1045,22 @@ $('#resetAll').addEventListener('click', () => {
   }
 });
 
+/* ---------- location jump + return bars ---------- */
+$('#locBtn').addEventListener('click', () => {
+  const first = activePage() && activePage().items[0];
+  $('#locInput').value = first ? first.loc : 1;
+  $('#locHint').textContent = 'من ١ إلى ' + fmtNum(META.cards || 0) + ' — الرقم ثابت لا يتغير مع حجم الخط.';
+  $('#locModal').style.display = 'flex';
+});
+$('#locCancel').addEventListener('click', () => { $('#locModal').style.display = 'none'; });
+$('#locGo').addEventListener('click', () => {
+  const n = parseInt($('#locInput').value, 10);
+  $('#locModal').style.display = 'none';
+  if(n) gotoLoc(n);
+});
+$('#readBackBar').addEventListener('click', e => { if(e.target.closest('#readBackBtn')) restoreRead(); });
+$('#searchBackBtn').addEventListener('click', () => { setTab('read'); restoreRead(); });
+
 /* ---------- parts sheet ---------- */
 function renderParts(){
   $('#partsList').innerHTML = PARTS.map((p, i) =>
@@ -1001,15 +1079,21 @@ $('#partsList').addEventListener('click', e => {
 });
 
 /* ---------- navigation ---------- */
-function setTab(tab){
+function setTab(tab, fromClick){
+  if(fromClick && tab === 'search' && currentTab === 'read') captureReadReturn();
   $$('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
   ['read','today','fav','search','settings'].forEach(t => { $('#tab-'+t).hidden = (t !== tab); });
+  currentTab = tab;
   if(tab === 'today') renderToday();
   if(tab === 'fav') renderFav();
-  if(tab === 'search') renderSearchLocal();
+  if(tab === 'search'){ renderSearchLocal(); renderReadBackBar(); }
   window.scrollTo({top:0});
 }
-$$('.tab-btn').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+$$('.tab-btn').forEach(b => b.addEventListener('click', () => {
+  const t = b.dataset.tab, was = currentTab;
+  setTab(t, true);
+  if(t === 'read' && readReturn && was !== 'read') restoreRead();
+}));
 $('#secStrip').addEventListener('click', e => {
   const b = e.target.closest('[data-topic]'); if(!b) return;
   const ps = pagesOfTopic(parseInt(b.dataset.topic, 10));
