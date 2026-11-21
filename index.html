@@ -354,9 +354,11 @@ mark.hl-has-note{border-bottom:2px solid var(--accent)}
   <button class="tab-btn" data-tab="settings"><span class="ico">⚙️</span><span>الإعدادات</span></button>
 </nav>
 
-<script src="data/manifest.js"></script>
+<script src="data/manifest.js?v=2"></script>
 <script>
 "use strict";
+/* غيّر رقم الإصدار هذا عند كل تحديث لملفات data كي لا يخدم المتصفح نسخة قديمة */
+const DATA_VERSION = 2;
 /* ---------- helpers ---------- */
 const $ = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
@@ -405,7 +407,7 @@ const META = window.__BOOK_META__ || {};
 let PART = [], PAGES = [], PAGE_INDEX = {}, TOPICS = [];
 const loaded = {}, loading = {};
 const PART_FILE = {};
-PARTS.forEach((p, i) => { PART_FILE[p.id] = 'data/' + p.id + '.js'; });
+PARTS.forEach((p, i) => { PART_FILE[p.id] = 'data/' + p.id + '.js?v=' + DATA_VERSION; });
 
 function loadPart(i){
   const p = PARTS[i];
